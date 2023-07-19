@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var marioRouter = require('./routes/mario')
+var marioRouter_test = require('./routes/mario_test')
 var IQtestRouter = require('./routes/IQtest')
 var problemsSetRouter = require('./routes/problemset')
 var dataRouter = require('./routes/data')
@@ -29,6 +30,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/task', problemsSetRouter)
 app.use('/mario', marioRouter)
+app.use('/mario_test', marioRouter_test)
 app.use('/IQtest', IQtestRouter);
 app.use('/data', dataRouter)
 

@@ -5,6 +5,12 @@ fail_stage_list = new Array();
 last_stage = -123;
 random_stage = new Array();
 
+//아래의 변수는 mario_test에서 사용할 예정
+clear_stage_list_1 = new Array();
+fail_stage_list_1 = new Array();
+last_stage_1 = -123;
+random_stage_1 = new Array();
+
 /* @@@@@@@@@@@@@@@@@ 돌아가는 별자리 함수 @@@@@@@@@@@@@@@@@ */
 /* 랜덤 int 가져오는 함수 */
 function getRandomArbitrary(min, max) {
@@ -104,11 +110,13 @@ function setCookieData() {
 			}
 			return temp_list;
 		};
-		random_stage = getRandom(
-			5948,
-			6496,
-			TOTAL_STAGE
-		); /* 문제를 랜덤으로 가져오는건데 지정하는걸로 바꿔.*/
+		// random_stage = getRandom(
+		// 	5948,
+		// 	6496,
+		// 	TOTAL_STAGE
+		// ); /* 문제를 랜덤으로 가져오는건데 지정하는걸로 바꿔.*/
+		
+		random_stage = [5952,5971,5978,5983,6015,6018,6021,6022,6026,6033,6048,6055]
 		document.cookie = "rs=" + random_stage.join("@");
 	}
 }
@@ -256,4 +264,191 @@ function superSecret() {
 			window.location.reload();
 		}
 	}
+}
+
+
+// 밑에 함수들은 많이 고칠 필요가 있어보임
+// 일단 mario_test는 돌아는 가게 작성함(정확하게는 stage 클릭하고 문제보는 것까지는 이상 없음)
+function setCookieData_test() {
+	var cookies = document.cookie.split(";").map((el) => el.split("="));
+	/* check cookies */
+	var flag = false;
+	for (let i = 0; i < cookies.length; i++) {
+		var elem = cookies[i];
+		if (elem[0].trim() == "csl_1") {
+			if (elem[1].length == 0) {
+				continue;
+			}
+			clear_stage_list_1 = elem[1].split("@");
+			flag = true;
+		}
+		if (elem[0].trim() == "fsl_1") {
+			if (elem[1].length == 0) {
+				continue;
+			}
+			fail_stage_list_1 = elem[1].split("@");
+			flag = true;
+		}
+		if (elem[0].trim() == "rs_1") {
+			if (elem[1].length == 0) {
+				continue;
+			}
+			random_stage_1 = elem[1].split("@");
+			flag = true;
+		}
+		if (elem[0].trim() == "ls_1") {
+			if (elem[1] == -123) {
+				continue;
+			}
+			last_stage = elem[1] * 1;
+			flag = true;
+		}
+	}
+	/* if no cookie data about csl fsl */
+	if (!flag) {
+		document.cookie = "csl_1=" + clear_stage_list_1.join("@");
+		document.cookie = "fsl_1=" + fail_stage_list_1.join("@");
+		document.cookie = "ls_1=" + String(-123);
+
+		/* get random stage */
+		let getRandom = (min, max, count) => {
+			let temp_list = new Array();
+			let flag = false;
+			while (temp_list.length < count) {
+				flag = false;
+				let elem = Math.floor(Math.random() * (max - min + 1)) + min;
+				for (let e of temp_list) {
+					if (e == elem || elem == 6097) {
+						flag = true;
+					}
+				}
+				if (!flag) {
+					temp_list.push(elem);
+				}
+			}
+			return temp_list;
+		};
+		// random_stage = getRandom(
+		// 	5948,
+		// 	6496,
+		// 	TOTAL_STAGE
+		// ); /* 문제를 랜덤으로 가져오는건데 지정하는걸로 바꿔.*/
+		random_stage_1 = [6268,6410,6241,6247,6309,6271,6490,6299,6291,6410,6186,6227]
+		document.cookie = "rs_1=" + random_stage_1.join("@");
+	}
+}
+
+/* save data in cookies */
+function checkResult_test() {
+	if (last_stage_1 != -123) {
+		/* correct */
+		var num = last_stage_1;
+		if (window.location.href.split("?").at(-1) == "true") {
+			clear_stage_list_1.push(num);
+			document.cookie = "csl_1=" + clear_stage_list_1.join("@");
+		} else if (window.location.href.split("?").at(-1) == "false") {
+			fail_stage_list_1.push(num);
+			document.cookie = "fsl_1=" + fail_stage_list_1.join("@");
+		}
+		document.cookie = "ls_1=" + String(-123);
+		last_stage_1 = -123;
+		location.href = "/mario_test";
+		return;
+	}
+
+	/* set ui by cookie */
+	let rnsh = document.getElementsByClassName("stage");
+	for (let i = 0; i < random_stage_1.length; i++) {
+		rnsh[i].setAttribute(
+			"onclick",
+			"enterProblemMario_test(" +
+				random_stage_1[i].toString() +
+				"," +
+				(i + 1).toString() +
+				");"
+		);
+	}
+
+	for (let elem of clear_stage_list_1) {
+		let stage_html = document.getElementById(elem);
+		stage_html.firstElementChild.className = "stage-clear";
+		stage_html.firstElementChild.setAttribute("onclick", "");
+		stage_html.firstElementChild.lastElementChild.textContent = "Clear";
+	}
+
+	/* change progress bar */
+	let per = parseInt((100 * clear_stage_list_1.length) / TOTAL_STAGE);
+	document.querySelector(".progress-bar-move").style.width =
+		per.toString() + "%";
+	document.getElementsByClassName("titlePER")[0].innerHTML =
+		per.toString() + "%";
+
+	for (let elem of fail_stage_list_1) {
+		let stage_html = document.getElementById(elem);
+		stage_html.firstElementChild.className = "stage-fail";
+		stage_html.firstElementChild.setAttribute("onclick", "");
+		stage_html.firstElementChild.lastElementChild.textContent = "Fail";
+	}
+}
+
+/* go to problem*/
+function enterProblemMario_test(problem, stage) {
+	document.cookie = "ls_1=" + String(stage);
+	location.href = "/mario_test/anonymous/" + String(problem);
+}
+
+/* function for submit button */
+function submitSolutionMario(input) {
+	/* 맞았는지 틀렸는지 구현 */
+	const divs = document.querySelectorAll("#user_interact .cell_final");
+	const rows = document.querySelectorAll("#user_interact .row");
+	const rownum = rows.length;
+	const divnum = divs.length;
+
+	// console.log(divs[0].className)
+	// console.log(rownum)
+	// console.log(divnum/rownum)
+
+	const numbersArray = [];
+	for (let i = 0; i < rownum; i++) {
+		const rowArray = [];
+
+		for (let j = 0; j < divnum / rownum; j++) {
+			const index = i * (divnum / rownum) + j;
+			const div = divs[index];
+
+			const className = div.className;
+			const number = className.split("symbol_")[1]; // Extract the number after "symbol_"
+			rowArray.push(parseInt(number)); // Store the number in the row array
+		}
+
+		numbersArray.push(rowArray); // Store the row array in the main array
+	}
+
+	User_Answer = numbersArray.map((num) => parseInt(num));
+	Actual_Answer = input[0][1].grid.flat().map((num) => parseInt(num));
+
+	console.log(numbersArray);
+
+	for (let i = 0; i < input[0][1].grid.length; i++) {
+		for (let j = 0; j < input[0][1].grid[i].length; j++) {
+			// Convert the value to an integer using parseInt()
+			input[0][1].grid[i][j] = parseInt(input[0][1].grid[i][j]);
+		}
+	}
+	console.log(input[0][1].grid);
+	answer = compareArrays(numbersArray, input[0][1].grid);
+	var retVal = "";
+
+	if (!answer) {
+		retVal = "false";
+		alert("Wrong!");
+	} else {
+		retVal = "true";
+		alert("Success!");
+	}
+
+	/* 마리오 페이지로 redirection with return val */
+	/* retVal에는 정답이면 true 오답이면 false인 String이 들어가야함*/
+	location.href = "/mario_test?" + retVal;
 }
