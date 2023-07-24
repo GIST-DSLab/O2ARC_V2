@@ -122,7 +122,7 @@
                         
                       <% } %>
                       <% if(item[0].height > item[0].width) {n=item[0].height} else{n=item[0].width} %>
-                      <% cs = 200/n %>
+                      <% cs = 199/n  %>
                       <% // console.log(cs)%>
 
                       <div class="row justify-content-center">
@@ -149,7 +149,7 @@
                         <% } %>
 
                         <% if(item[1].height > item[1].width) {n=item[1].height} else{n=item[1].width} %>
-                        <% cs = 200/n %>
+                        <% cs = 199/n %>
                         <% // console.log(cs)%>
   
                         <div class="row justify-content-center">
@@ -181,7 +181,7 @@
                         <div class="container output_preview">
                       <% } %>
                       <% if(item[0].height > item[0].width) {n=item[0].height} else{n=item[0].width} %>
-                      <% cs = 400/n %>
+                      <% cs = 399/n %>
                       <% // console.log(cs)%>
 
                       <div class="row justify-content-center">
@@ -207,7 +207,7 @@
                 <div id="editor_grid_control_btns">
                   <div id="resize_control_btns">
                       <label for="output_grid_size">Change grid size: </label>
-                      <input type="text" id="output_grid_size" class="grid_size_field" name="size" value="3x3">
+                      <input type="text" id="output_grid_size" class="grid_size_field" name="size" value="3x3" onkeyup="if(window.event.keyCode ==13){resizeOutputGrid()}">
                       <button onclick="resizeOutputGrid()" id="resize_btn">Resize</button>
                   </div>
 
@@ -223,7 +223,7 @@
                         <div id="user_interact" class="container output_preview">
                       <% } %>
                       <% if(item[0].height > item[0].width) {n=item[0].height} else{n=item[0].width} %>
-                      <% cs = 400/n %>
+                      <% cs = 399/n %>
                       <% // console.log(cs)%>
 
                       <div class="row justify-content-center">
@@ -252,9 +252,10 @@
                        name="tool_switching" value="select">
                       <label for="tool_select">Select</label>
 
-                      <!-- <input type="radio" id="tool_floodfill"
+                      <input type="radio" id="tool_floodfill"
                        name="tool_switching" value="floodfill">
-                      <label for="tool_floodfill">Flood fill</label> -->
+                      <label for="tool_floodfill">Flood fill</label>
+                      
                       <div id="select_util_btn">
                         <button id="clockrotate" style="display: none;">Clockwise Rotate</button>
                         <button id="counterclockrotate" style="display: none;">Counterclockwise Rotate</button>

@@ -101,7 +101,7 @@ h5 {
 
 /*Selectable*/
 
-.ui-selected {
+.ui-selected.cell_final {
   background-image: url(../img/black-twill.png), url(../img/brushed-alum.png);
 }
 .ui-selectable-helper {
@@ -156,15 +156,3 @@ button:focus {outline:0;}
   margin: 90px auto;
   height: 20px;
 }
-
-/*Selectable*/
-
-.ui-selected {
-  background-image: url(../img/black-twill.png), url(../img/brushed-alum.png);
-}
-.ui-selectable-helper {
-  border: 1px dotted #ddd;
-  position: absolute;
-  z-index: 1000;
-}
-

@@ -1,332 +1,357 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>H=^~^=H</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <style>
-        .stage-parent {
-            position: relative;
-            margin: 0 auto;
-            width: 200px;
-            height: 200px;
-            border: none;
-        }
+	<head>
+		<meta charset="UTF-8" />
+		<title>H=^~^=H</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+			crossorigin="anonymous" />
+		<style>
+			.stage-parent {
+				position: relative;
+				margin: 0 auto;
+				width: 200px;
+				height: 200px;
+				border: none;
+			}
 
-        .stage {
-            position: relative;
-            margin: 0 auto;
-            width: 150px;
-            height: 150px;
-            border: none;
-            top: 50px;
-            border-radius: 30%;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
+			.stage {
+				position: relative;
+				margin: 0 auto;
+				width: 150px;
+				height: 150px;
+				border: none;
+				top: 50px;
+				border-radius: 30%;
+				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s ease-in-out;
+			}
 
-        .stage:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-        }
+			.stage:hover {
+				transform: scale(1.05);
+				box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+			}
 
-        .stage::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 30%;
-            background-image: linear-gradient(135deg, #f900ff 0%, #00c3ff 100%);
-            opacity: 0.6;
-            z-index: -1;
-        }
+			.stage::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				border-radius: 30%;
+				background-image: linear-gradient(135deg, #f900ff 0%, #00c3ff 100%);
+				opacity: 0.6;
+				z-index: -1;
+			}
 
-        .stage .title {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            text-shadow: 0 0 5px #fff;
-            text-align: center;
-        }
+			.stage .title {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: #fff;
+				font-size: 40px;
+				font-weight: bold;
+				text-shadow: 0 0 5px #fff;
+				text-align: center;
+			}
 
-        .stage-clear {
-            position: relative;
-            margin: 0 auto;
-            width: 150px;
-            height: 150px;
-            border: none;
-            top: 50px;
-            border-radius: 30%;
-            box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
+			.stage-clear {
+				position: relative;
+				margin: 0 auto;
+				width: 150px;
+				height: 150px;
+				border: none;
+				top: 50px;
+				border-radius: 30%;
+				box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s ease-in-out;
+			}
 
-        .stage-clear:hover {
-            transform: scale(0.9);
-            box-shadow: inset 0 12px 24px rgba(0, 0, 0, 0.5);
-        }
+			.stage-clear:hover {
+				transform: scale(0.9);
+				box-shadow: inset 0 12px 24px rgba(0, 0, 0, 0.5);
+			}
 
-        .stage-clear .title {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fffeab;
-            font-size: 40px;
-            font-weight: bold;
-            text-shadow: 0 0 5px #f0ff50;
-            text-align: center;
-        }
+			.stage-clear .title {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: #fffeab;
+				font-size: 40px;
+				font-weight: bold;
+				text-shadow: 0 0 5px #f0ff50;
+				text-align: center;
+			}
 
-        .stage-fail {
-            position: relative;
-            margin: 0 auto;
-            width: 150px;
-            height: 150px;
-            border: none;
-            top: 50px;
-            border-radius: 30%;
-            box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
+			.stage-fail {
+				position: relative;
+				margin: 0 auto;
+				width: 150px;
+				height: 150px;
+				border: none;
+				top: 50px;
+				border-radius: 30%;
+				box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.5);
+				transition: all 0.3s ease-in-out;
+			}
 
-        .stage-fail:hover {
-            transform: scale(0.9);
-            box-shadow: inset 0 12px 24px rgba(0, 0, 0, 0.5);
-        }
+			.stage-fail:hover {
+				transform: scale(0.9);
+				box-shadow: inset 0 12px 24px rgba(0, 0, 0, 0.5);
+			}
 
-        .stage-fail .title {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #db5a51;
-            font-size: 40px;
-            font-weight: bold;
-            text-shadow: 0 0 5px #a04034;
-            text-align: center;
-        }
+			.stage-fail .title {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: #db5a51;
+				font-size: 40px;
+				font-weight: bold;
+				text-shadow: 0 0 5px #a04034;
+				text-align: center;
+			}
 
-        .backSky {
-            padding-top: 50px;
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);  
-            overflow: hidden;
-        }
+			.backSky {
+				padding-top: 50px;
+				width: 100vw;
+				height: 100vh;
+				position: relative;
+				background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+				overflow: hidden;
+			}
 
-        .sky {
-            width: 2000px;
-            height: 2000px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            animation: moveStar 240s linear infinite;
-        }
+			.sky {
+				width: 2000px;
+				height: 2000px;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				animation: moveStar 240s linear infinite;
+			}
 
-        .star {
-            fill: #fff;
-            stroke: none;
-            stroke-width: 0;
-            position: absolute;
-            border-radius: 50%;
-            animation-name: estrela;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-        }
+			.star {
+				fill: #fff;
+				stroke: none;
+				stroke-width: 0;
+				position: absolute;
+				border-radius: 50%;
+				animation-name: estrela;
+				animation-timing-function: linear;
+				animation-iteration-count: infinite;
+			}
 
-        .sky .style1 { animation-duration: 1s; animation-name: estrelaDestacada; }
-        .sky .style2 { animation-duration: 2s; animation-name: estrelaDestacada; }
-        .sky .style3 { animation-duration: 4s; animation-name: estrelaDestacada; }
+			.sky .style1 {
+				animation-duration: 1s;
+				animation-name: estrelaDestacada;
+			}
+			.sky .style2 {
+				animation-duration: 2s;
+				animation-name: estrelaDestacada;
+			}
+			.sky .style3 {
+				animation-duration: 4s;
+				animation-name: estrelaDestacada;
+			}
 
-        .sky .tam1 { width: 2px; height: 2px; }
-        .sky .tam2 { width: 3px; height: 3px; }
-        .sky .tam3 { width: 5px; height: 5px; }
+			.sky .tam1 {
+				width: 2px;
+				height: 2px;
+			}
+			.sky .tam2 {
+				width: 3px;
+				height: 3px;
+			}
+			.sky .tam3 {
+				width: 5px;
+				height: 5px;
+			}
 
-        .sky .opacity1 { opacity:  1; }
-        .sky .opacity2 { opacity: .5; }
+			.sky .opacity1 {
+				opacity: 1;
+			}
+			.sky .opacity2 {
+				opacity: 0.5;
+			}
 
-        .scroll-container {
-            width: 100vw;
-            height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
+			.scroll-container {
+				width: 100vw;
+				height: 100vh;
+				overflow-y: auto;
+				overflow-x: hidden;
+			}
 
-        /* 크롬에서만 스크롤바 숨기기 ㄷㄷ */
-        .scroll-container::-webkit-scrollbar {
-            display: none;
-        }
+			/* 크롬에서만 스크롤바 숨기기 ㄷㄷ */
+			.scroll-container::-webkit-scrollbar {
+				display: none;
+			}
 
-        .progress-bar-background{
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            z-index: 10;
-        }
+			.progress-bar-background {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 50px;
+				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+				z-index: 10;
+			}
 
-        .progress-bar{
-            float: left;
-            position: relative;
-            height: 30px;
-            width: 80%;
-            background-color: #ffffff;
-            opacity: 1.0;
-            border-radius: 30px 30px 30px 30px;
-            margin: 10px 10px;
-            box-shadow: 0 0 10px;
-        }
+			.progress-bar {
+				float: left;
+				position: relative;
+				height: 30px;
+				width: 80%;
+				background-color: #ffffff;
+				opacity: 1;
+				border-radius: 30px 30px 30px 30px;
+				margin: 10px 10px;
+				box-shadow: 0 0 10px;
+			}
 
-        .progress-bar-move{
-            position: relative;
-            height: 30px;
-            width: 0%;
-            background-image: linear-gradient(135deg, #fdff77 0%, #00c3ff 100%);
-            opacity: 1.0;
-            border-radius: 30px 30px 30px 30px;
-            background-size: 200% 200%;
-            animation: progress-bar 5s linear infinite;
-        }
+			.progress-bar-move {
+				position: relative;
+				height: 30px;
+				width: 0%;
+				background-image: linear-gradient(135deg, #fdff77 0%, #00c3ff 100%);
+				opacity: 1;
+				border-radius: 30px 30px 30px 30px;
+				background-size: 200% 200%;
+				animation: progress-bar 5s linear infinite;
+			}
 
-        .progress-bar .titlePER{
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #e8c47e;
-            font-size: 120%;
-            font-weight: bold;
-            text-shadow: 0 0 5px #f8feb5;
-            text-align: center;
-        }
+			.progress-bar .titlePER {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: #e8c47e;
+				font-size: 120%;
+				font-weight: bold;
+				text-shadow: 0 0 5px #f8feb5;
+				text-align: center;
+			}
 
-        .super-secret{
-            float: right;
-            position: relative;
-            height: 32px;
-            width: 12%;
-            max-width: 100px;
-            background-image: linear-gradient(135deg, #fffadc 0%, #ffd20a 100%);
-            opacity: 1.0;
-            border-radius: 30px 30px 30px 30px;
-            margin: 9px 10px;
-            box-shadow: 0 0 10px;
-            transition: all 0.3s ease-in-out;
-        }
+			.super-secret {
+				float: right;
+				position: relative;
+				height: 32px;
+				width: 12%;
+				max-width: 100px;
+				background-image: linear-gradient(135deg, #fffadc 0%, #ffd20a 100%);
+				opacity: 1;
+				border-radius: 30px 30px 30px 30px;
+				margin: 9px 10px;
+				box-shadow: 0 0 10px;
+				transition: all 0.3s ease-in-out;
+			}
 
-        .super-secret:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px;
-        }
+			.super-secret:hover {
+				transform: scale(1.1);
+				box-shadow: 0 0 30px;
+			}
 
-        .super-secret .title {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #c79304;
-            font-size: 100%;
-            font-weight: bold;
-            text-shadow: 0 0 5px #ffcf76;
-            text-align: center;
-        }
+			.super-secret .title {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: #c79304;
+				font-size: 100%;
+				font-weight: bold;
+				text-shadow: 0 0 5px #ffcf76;
+				text-align: center;
+			}
 
-        @keyframes moveStar {
-            from {
-                transform: translate(-50%, -50%) rotate(0);
-            }
+			@keyframes moveStar {
+				from {
+					transform: translate(-50%, -50%) rotate(0);
+				}
 
-            to {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
+				to {
+					transform: translate(-50%, -50%) rotate(360deg);
+				}
+			}
 
-        @keyframes estrelaDestacada {
-            0% {
-                background-color: #ffd986;
-                box-shadow: 0 0 10px 0px rgb(255, 233, 215);
-            }
-            20% {
-                background-color: #f79393;
-                box-shadow: 0 0 10px 0px rgb(255, 196, 196, 1);
-            }
-            80% {
-                background-color: #889dfa;
-                box-shadow: 0 0 10px 0px rgb(196, 207, 255, 1);
-            }
-            100% {
-                background-color: #FFFFFF;
-                box-shadow: 0 0 10px 0px rgba(255, 255, 255, 0.2);
-            }
-        }
+			@keyframes estrelaDestacada {
+				0% {
+					background-color: #ffd986;
+					box-shadow: 0 0 10px 0px rgb(255, 233, 215);
+				}
+				20% {
+					background-color: #f79393;
+					box-shadow: 0 0 10px 0px rgb(255, 196, 196, 1);
+				}
+				80% {
+					background-color: #889dfa;
+					box-shadow: 0 0 10px 0px rgb(196, 207, 255, 1);
+				}
+				100% {
+					background-color: #ffffff;
+					box-shadow: 0 0 10px 0px rgba(255, 255, 255, 0.2);
+				}
+			}
 
-        @keyframes progress-bar {
-            0% {
-                background-position:10% 0%;
-            }
-            50% {
-                background-position:91% 100%;
-            }
-            100% {
-                background-position:10% 0%;
-            }
-        }
-    </style>
-    <script src="/javascripts/mario.js"></script>
-    <script>
-        /* counting stars bam haneul wow fantastic*/
-        window.onresize = () => {
-                makeStars();
-            }
+			@keyframes progress-bar {
+				0% {
+					background-position: 10% 0%;
+				}
+				50% {
+					background-position: 91% 100%;
+				}
+				100% {
+					background-position: 10% 0%;
+				}
+			}
+		</style>
+		<script src="/javascripts/mario.js"></script>
+		<script>
+			/* counting stars bam haneul wow fantastic*/
+			window.onresize = () => {
+				makeStars();
+			};
 
-        window.onload = () => {
-            setCookieData();
-            checkResult();
-            makeStars();
-        }
-    </script>
-</head>
-<body>
-    <div class="progress-bar-background">
-        <div class="progress-bar">
-            <div class="progress-bar-move"></div>
-            <div class="titlePER"> 0% </div>
-        </div>
-        <div class="super-secret" onclick="superSecret()">
-            <div class="title"> REWARD </div>
-        </div>
-    </div>
-    <div class="backSky">
-        <div class="sky"></div>
-        <!--  <div class="sky"></div>  -->
-        <div class="scroll-container">
-            <div class="row">
-                <% for(let i=0; i<6; i++){ %>
-                    <div class="col-sm-12 col-md-6 col-lg-4">
-                        <div class="stage-parent" id="<%=i+1%>">
-                            <div class="stage" onclick="">
-                                <div class="title">Stage <%= i+1 %></div>
-                            </div>
-                        </div>
-                    </div>
-                <%}%>
-                <div class="col-sm-12 col-md-6 col-lg-4">
-                    <div class="stage-parent"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-
-
+			window.onload = () => {
+				setCookieData();
+				checkResult();
+				makeStars();
+			};
+		</script>
+	</head>
+	<body>
+		<div class="progress-bar-background">
+			<div class="progress-bar">
+				<div class="progress-bar-move"></div>
+				<div class="titlePER">0%</div>
+			</div>
+			<div class="super-secret" onclick="superSecret()">
+				<div class="title">REWARD</div>
+			</div>
+		</div>
+		<div class="backSky">
+			<div class="sky"></div>
+			<!--  <div class="sky"></div>  -->
+			<div class="scroll-container">
+				<div class="row">
+					<% for(let i=0; i<12; i++){ %>
+					<div class="col-sm-12 col-md-6 col-lg-4">
+						<div class="stage-parent" id="<%=i+1%>">
+							<div class="stage" onclick="">
+								<div class="title">Stage <%= i+1 %></div>
+							</div>
+						</div>
+					</div>
+					<%}%>
+					<div class="col-sm-12 col-md-6 col-lg-4">
+						<div class="stage-parent"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,8 +1,8 @@
-$(document).ready(function () {
+$(function () {
 	var initialToolMode = "edit";
 	handleToolModeChange(initialToolMode);
-
-	$("input[name=tool_switching]").change(function () {
+	$("input[id=tool_edit]").prop("checked", true);
+	$("input[name=tool_switching]").on("change", function () {
 		var selectedToolMode = $(this).val();
 		handleToolModeChange(selectedToolMode);
 	});
@@ -272,7 +272,7 @@ function handleToolModeChange(toolMode) {
 	} else if (toolMode == "floodfill") {
 		// 'flood fill' mode
 		disableTools();
-		enableFloodFill();
+		//enableFloodFill();
 		//   infoMsg('Flood fill mode activated');
 	} else {
 	}
@@ -304,7 +304,7 @@ function enableSelectable() {
 	$("#user_interact").selectable(); // get selectable
 	$("#symbol_picker")
 		.find(".symbol_preview")
-		.click(function (event) {
+		.on("click", function (event) {
 			pickSymbol(); // pick symbol color
 			fillSelected(); // fill selected cell_final
 		});
@@ -431,8 +431,8 @@ function resizeOutputGrid() {
 		for (var j = 0; j < cols; j++) {
 			var cell = document.createElement("div");
 			cell.className = "cell_final symbol_0";
-			cell.style.width = 400 / n + "px";
-			cell.style.height = 400 / n + "px";
+			cell.style.width = 399 / n + "px";
+			cell.style.height = 399 / n + "px";
 			row.appendChild(cell);
 		}
 		grid.appendChild(row);
@@ -443,6 +443,8 @@ function resizeOutputGrid() {
 	movedesrcript = "change grid size";
 	final = pushToTargetArray(array, labelText, movedesrcript, final);
 	movedesrcript = "";
+
+	cell_observer();
 
 	cell_observer();
 }
@@ -464,30 +466,12 @@ function copyFromInput() {
 		var rowDiv = document.createElement("div");
 		rowDiv.className = "row justify-content-center";
 
-<<<<<<< Updated upstream
-    for (var i = 0; i < testgrid[0][0].height; i++) {
-        var rowDiv = document.createElement("div");
-        rowDiv.className = "row justify-content-center";
-        
-        for (var j = 0; j < testgrid[0][0].width; j++) {
-        var cellDiv = document.createElement("div");
-        cellDiv.className = "cell_final symbol_" + testgrid[0][0].grid[i][j];
-        cellDiv.id = "cell_" +i +'-' + j 
-        cellDiv.style.width = (400 / n)+ "px"; // Set the desired width of each cell
-        cellDiv.style.height = (400 / n)+ "px"; // Set the desired height of each cell
-        
-        rowDiv.appendChild(cellDiv);
-        }
-        
-        userInteractDiv.appendChild(rowDiv);
-=======
 		for (var j = 0; j < testgrid[0][0].width; j++) {
 			var cellDiv = document.createElement("div");
 			cellDiv.className = "cell_final symbol_" + testgrid[0][0].grid[i][j];
 			cellDiv.id = "cell_" + i + "-" + j;
 			cellDiv.style.width = 399 / n + "px"; // Set the desired width of each cell
 			cellDiv.style.height = 399 / n + "px"; // Set the desired height of each cell
->>>>>>> Stashed changes
 
 			rowDiv.appendChild(cellDiv);
 		}
@@ -604,41 +588,6 @@ function IQsubmitSolution(input, name, cRoute) {
 	for (let i = 0; i < rownum; i++) {
 		const rowArray = [];
 
-<<<<<<< Updated upstream
-    User_Answer = numbersArray.map(num => parseInt(num))
-    Actual_Answer = input[0][1].grid.flat().map(num => parseInt(num))
-
-    console.log(numbersArray)
-
-    for (let i = 0; i < input[0][1].grid.length; i++) {
-      for (let j = 0; j < input[0][1].grid[i].length; j++) {
-        // Convert the value to an integer using parseInt()
-        input[0][1].grid[i][j] = parseInt(input[0][1].grid[i][j]);
-      }
-    }
-
-    //console.log(numbersArray)
-    //console.log(input[0][0].grid)
-    //console.log(input[0][1].grid.flat()) // 이 친구가 답임 ㅋㅋ
-    console.log(cRoute)
-    var lastPart = cRoute.substring(cRoute.lastIndexOf('/') + 1);
-    var incrementedValue = parseInt(lastPart, 10) + 1;
-    
-    // Convert the incremented value back to a string
-    var incrementedLastPart = incrementedValue.toString();
-    
-    console.log(User_Answer)
-    console.log(Actual_Answer)
-    answer = compareArrays(User_Answer, Actual_Answer)
-    console.log(answer)
-    if(answer){
-        alert('Success!')
-        window.location.href = incrementedLastPart
-    } else {
-        alert('Wrong!')
-    }
-    
-=======
 		for (let j = 0; j < divnum / rownum; j++) {
 			const index = i * 5 + j;
 			const div = divs[index];
@@ -647,7 +596,6 @@ function IQsubmitSolution(input, name, cRoute) {
 			const number = className.split("symbol_")[1]; // Extract the number after "symbol_"
 			rowArray.push(parseInt(number)); // Store the number in the row array
 		}
->>>>>>> Stashed changes
 
 		numbersArray.push(rowArray); // Store the row array in the main array
 	}
@@ -845,7 +793,7 @@ function updateCellClasses(cellIdsArray, symbolsArray) {
 function getSelectedCellIds() {
 	var selectedCellIds = [];
 
-	$(".ui-selected").each(function () {
+	$(".cell_final.ui-selected").each(function () {
 		var cellId = $(this).attr("id");
 		if (cellId) {
 			selectedCellIds.push(cellId);
