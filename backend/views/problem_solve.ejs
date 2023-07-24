@@ -178,7 +178,7 @@
                     <div class="col">
                     <% for(i = 0; i < item[0].height ; i++){ %>
                       <% if(i == 0){ %>
-                        <div class="container output_preview">
+                        <div id="test_input_grid" class="user_interact container output_preview">
                       <% } %>
                       <% if(item[0].height > item[0].width) {n=item[0].height} else{n=item[0].width} %>
                       <% cs = 399/n %>
@@ -186,14 +186,15 @@
 
                       <div class="row justify-content-center">
                       <% for(j = 0; j < item[0].width; j++){ %>
-                        <div class="cell_final symbol_<%= item[0].grid[i][j] %>"style="width: <%= cs %>px; height: <%= cs %>px">  </div>
+                        <div class="cell_final symbol_<%= item[0].grid[i][j] %>" id="inputcell_<%= i %>-<%= j %>" style="width: <%= cs %>px; height: <%= cs %>px;">  </div>
 
                       <% } %>
+                      </div>
                       <% if(i == item[0].height - 1){ %>
                       </div>
                       <% } %>
 
-                      </div>
+                      
                     <% } %>
                     </div>
                   
@@ -207,7 +208,7 @@
                 <div id="editor_grid_control_btns">
                   <div id="resize_control_btns">
                       <label for="output_grid_size">Change grid size: </label>
-                      <input type="text" id="output_grid_size" class="grid_size_field" name="size" value="3x3" onkeyup="if(window.event.keyCode ==13){resizeOutputGrid()}">
+                      <input type="text" id="output_grid_size" class="grid_size_field" name="size" value="<%= Outputgrid[0][0].height %>x<%= Outputgrid[0][0].width %>" onkeyup="if(window.event.keyCode ==13){resizeOutputGrid()}">
                       <button onclick="resizeOutputGrid()" id="resize_btn">Resize</button>
                   </div>
 
@@ -220,22 +221,23 @@
                     <div class="col">
                     <% for(i = 0; i < item[0].height ; i++){ %>
                       <% if(i == 0){ %>
-                        <div id="user_interact" class="container output_preview">
+                        <div id="test_output_grid" class="user_interact container output_preview">
                       <% } %>
                       <% if(item[0].height > item[0].width) {n=item[0].height} else{n=item[0].width} %>
                       <% cs = 399/n %>
                       <% // console.log(cs)%>
 
-                      <div class="row justify-content-center">
-                      <% for(j = 0; j < item[0].width; j++){ %>
-                        <div class="cell_final symbol_<%= item[0].grid[i][j] %>" id="cell_<%= i %>-<%= j %>" style="width: <%= cs %>px; height: <%= cs %>px">  </div>
+                        <div class="row justify-content-center">
+                        <% for(j = 0; j < item[0].width; j++){ %>
+                          <div class="cell_final symbol_<%= item[0].grid[i][j] %>" id="cell_<%= i %>-<%= j %>" style="width: <%= cs %>px; height: <%= cs %>px;">  </div>
 
-                      <% } %>
+                        <% } %>
+                        </div>
                       <% if(i == item[0].height - 1){ %>
                       </div>
                       <% } %>
 
-                      </div>
+                      
                     <% } %>
                     </div>
                   

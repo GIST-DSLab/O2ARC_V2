@@ -39,6 +39,8 @@ h5 {
 .output_preview {
   height: 400px;
   width: 400px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 
@@ -99,6 +101,9 @@ h5 {
   border: 2px solid rgb(255, 170, 0);
 }
 
+.cell_final {
+  float: left
+}
 /*Selectable*/
 
 .ui-selected.cell_final {
