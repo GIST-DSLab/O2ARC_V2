@@ -367,6 +367,18 @@ function setCookieData_mini() {
 		document.cookie = "rs_mini=" + random_stage_mini.join("@");
 	}
 }
+
+function checkPasswordAndRedirect_mini(event, url) {
+	console.log('asdf');
+    event.preventDefault();
+    var password = prompt("Please enter your password:");
+    if (password === "1234") {  // replace "your_password" with the actual password
+        window.location.href = url;
+    } else {
+        alert("Incorrect password.");
+    }
+}
+
 /* 타이머 초기화 함수 */
 function initial_timer_mini(){
 if(!checkCookie("visited_mini")) {
@@ -538,6 +550,17 @@ function superSecret_mini() {
 			window.location.reload();
 		}
 	} */
+}
+
+function checkPasswordAndRedirect_arc(event, url) {
+	console.log('asdf');
+    event.preventDefault();
+    var password = prompt("Please enter your password:");
+    if (password === "9876") {  // replace "your_password" with the actual password
+        window.location.href = url;
+    } else {
+        alert("Incorrect password.");
+    }
 }
 
 function initial_timer_arc(){
