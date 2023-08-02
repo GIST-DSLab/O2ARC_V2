@@ -28,4 +28,16 @@ router.get('/:id/arcs', async function(req, res, next) {
   return res.send(result);
 })
 
+router.get('/fetch-all-data', async (req, res, next) => {
+  // fetching all data from db 
+  let result = await userhelper.fetchAllData()
+  if (result === null){
+    return res.send('Error retrieving data');
+  }
+  return res.send(result);
+
+
+
+})
+
 module.exports = router;

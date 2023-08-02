@@ -44,3 +44,19 @@ module.exports.getARCList_test = async function (userName, mini = false){
         });
   })
 }
+
+module.exports.fetchAllData = async function (){
+  const query = 'SELECT * FROM submission'
+  return new Promise((resolve, reject) => {
+    db.all(query, (err, rows) => {
+          if (err) {
+            reject(err);
+            //db.close()
+          } else {
+    
+            resolve(rows);
+            //db.close()
+          }
+        });
+  })
+}
