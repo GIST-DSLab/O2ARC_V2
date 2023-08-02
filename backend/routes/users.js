@@ -8,7 +8,7 @@ const userhelper = require('../helpers/users');
 router.get('/:id/miniarcs', async function(req, res, next) {
   const userName = req.params.id
   //console.log(userName)
-  let result = await userhelper.fetchSuccessProblem(userName,mini=true);
+  let result = await userhelper.fetchSuccessProblem(userName);
   
   if (result === null){
     return res.send('Error retrieving data');
