@@ -134,7 +134,7 @@
                           <%= item.task_name %>
                         </div>
                         <div class="col-3 border">
-                          <%= success_list.includes(item.id)? String.fromCharCode(9989) : '' %>
+                          <%= success_list[item.id]!= undefined ? String.fromCharCode(9989).repeat(success_list[item.id][0])+String.fromCharCode(9745,65039).repeat(success_list[item.id][1]-success_list[item.id][0]) : '' %>
                         </div>
                       </div>
                     <% }) %>
@@ -180,7 +180,7 @@
                           <%= item.task_name %>
                         </div>
                         <div class="col-3 border">
-                          <%= success_list.includes(item.id)? String.fromCharCode(9989) : '' %>
+                          <%= success_list[item.id]!= undefined ? String.fromCharCode(9989).repeat(success_list[item.id][0])+String.fromCharCode(9745,65039).repeat(success_list[item.id][1]-success_list[item.id][0]) : '' %>
                         </div>
                       </div>
                     <% }) %>

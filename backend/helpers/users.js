@@ -46,7 +46,7 @@ var getARCList_test = async function (userName, mini = false){
 }
 
 var getSuccessList = async function(userName){
-  const query = 'SELECT task_id FROM submission WHERE user_name = ? AND success = 1 ';
+  const query = 'SELECT task_id, count(*), max(subtask_count) FROM submission WHERE user_name = ? AND success = 1 GROUP BY task_id';
   return new Promise((resolve, reject) => {
     db.all(query, [userName], (err, rows) => {
           if (err) {

@@ -24,8 +24,9 @@ router.get('/:id', async function(req, res, next) {
         data = await userhelper.getARCList_test(userName,mini=true);
         data2 = await userhelper.getARCList_test(userName);
         sucData = await userhelper.getSuccessList(userName);
-        sucData = sucData.map((v,i)=>v.task_id)
-        console.log(sucData);
+        sucDataDict = {}; 
+        
+        sucData.forEach((v,i)=> sucDataDict[v.task_id] = [v['count(*)'],v['max(subtask_count)']?v['max(subtask_count)']:1]);
     } catch (err) {
         console.log(err)
         return res.status(500).send("Internal Server Error")
@@ -35,7 +36,7 @@ router.get('/:id', async function(req, res, next) {
         userName: userName,
         miniARC_idlist: data,
         ARC_idlist: data2,
-        success_list: sucData, 
+        success_list: sucDataDict, 
     })
 
 
