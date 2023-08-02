@@ -20,6 +20,16 @@ random_stage_arc = new Array();
 timer_start_arc = 0;
 timer_end_arc = 0;
 
+function base64EncodeUnicode(str) {
+    // First, encode the string to UTF-8 text.
+    var utf8Text = unescape(encodeURIComponent(str));
+
+    // Then, encode the UTF-8 text to Base64.
+    var base64String = btoa(utf8Text);
+
+    return base64String;
+}
+
 function checkCookie(cookieName) {
     let cookieArray = document.cookie.split(';'); // 쿠키를 세미콜론 기준으로 분리하여 배열로 만듦
 
@@ -371,8 +381,8 @@ function setCookieData_mini() {
 function checkPasswordAndRedirect_mini(event, url) {
 	console.log('asdf');
     event.preventDefault();
-    var password = prompt("Please enter your password:");
-    if (password === "1234") {  // replace "your_password" with the actual password
+    var password = base64EncodeUnicode(prompt("Please enter your password:"));
+    if (password === "7LSI7KCE64+E7LK06rCA7KaI7JWEfiE=") {  // replace "your_password" with the actual password
         window.location.href = url;
     } else {
         alert("Incorrect password.");
@@ -555,8 +565,8 @@ function superSecret_mini() {
 function checkPasswordAndRedirect_arc(event, url) {
 	console.log('asdf');
     event.preventDefault();
-    var password = prompt("Please enter your password:");
-    if (password === "9876") {  // replace "your_password" with the actual password
+    var password = base64EncodeUnicode(prompt("Please enter your password:"));
+    if (password === "64uk7J2M7J2AQUdJ6rCA7KaI7JWEfiE=") {  // replace "your_password" with the actual password
         window.location.href = url;
     } else {
         alert("Incorrect password.");

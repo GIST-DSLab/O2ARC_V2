@@ -113,6 +113,9 @@ h5 {
 #editor_grid_control_btns {
   float:left;
   justify-content: center;
+  margin: auto;
+  min-width: 50%;
+  max-width: fit-content;
   margin-top: 10px;
   margin-bottom: 10px;
   background: white;
@@ -123,19 +126,20 @@ h5 {
 
 
 #resize_control_btns {
-  max-width:fit-content;
-  min-width:50%;
   margin:auto;
-  margin-bottom: 10px;
-  
+  margin-bottom: 20px;
   justify-content: center;
 }
-
-#critical_control_btns {
-  max-width: fit-content;
-  min-width: 50%;
+#resize_control_btns .input-group{
+  justify-content: center;
 }
-
+#resize_control_btns .form-outline{
+  width: 30%;
+}
+#critical_control_btns {
+  margin-right: 20px;
+}
+/*
 #undo_button, #redo_button {
   display: inline-block;
   margin: 5px;
@@ -156,7 +160,7 @@ h5 {
   background-color: white;
   color: black;
 }
-
+*/
 
 button:focus {outline:0;}
 
@@ -166,14 +170,22 @@ button:focus {outline:0;}
   margin-top: 18px;
   margin-bottom: 10px;
   width: 100%;
+}
 
+#toolbar-selection label {
+  max-width: 20%;
 }
-#toolbar-selection > .btn {
-  width: 34%;
+#undo-redo {
+  width: 30%;
+  margin:auto;
+  margin-bottom: 20px;
 }
+
 #toolbar-selection {
-  max-width:100%;
-  min-width:50%;
+  max-width: 80%;
+  min-width: 40%;
+  justify-content: center;
+  margin:auto;
   margin-bottom: 10px;
 }
 

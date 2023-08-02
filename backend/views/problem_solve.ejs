@@ -123,10 +123,12 @@
         <section class="text-center">
           <h4 class="pt-5 mb-5"><strong>Try Solving Mini-ARC or ARC Problems!</strong></h4>
           <% if(!competition) { %>
-          <button class="testing_button" id="browse_task" onclick="openMiniARCTasklist()">Browse MINI-ARC</button>
-          <button class="testing_button" id="browse_task" onclick="openARCTasklist()">Browse ARC</button>
-          <button onclick="window.location.href='./<%= ran1 %>'">Random MINI-ARC</button>
-          <button onclick="window.location.href='./<%= ran2 %>'">Random ARC</button>
+          <div class="btn-group" style="margin-bottom: 10px;">
+            <button class="testing_button btn btn-outline-primary btn-lg" id="browse_task" onclick="openMiniARCTasklist()">Browse MINI-ARC</button>
+            <button class="testing_button btn btn-outline-primary btn-lg " id="browse_task" onclick="openARCTasklist()">Browse ARC</button>
+            <button class="btn btn-outline-primary btn-lg" onclick="window.location.href='./<%= ran1 %>'">Random MINI-ARC</button>
+            <button class="btn btn-outline-primary btn-lg" onclick="window.location.href='./<%= ran2 %>'">Random ARC</button>
+          </div>
           <% }%>
           
           <div class="container-fluid">
@@ -250,17 +252,18 @@
                   
                   <div id="critical_control_btns" class="btn-group shadow-0" role="group" >
                     <button onclick="copyFromInput()" class="btn btn-secondary">Copy from input</button>
-                    <button id="resetBtn" onclick="resetOutputGrid()" class="btn btn-secondary">Reset grid</button>
-                    <% if(competition == 'mini'){ %>
-                      <button onclick="submitSolutionMarioMini(testgrid, '<%= userName %>' , currentRoute)" id="submit_solution_btn" class="btn btn-success">Submit!</button>
-                    <% } %>
-                    <% if(competition === 'arc'){ %>
-                      <button onclick="submitSolutionMarioARC(testgrid, '<%= userName %>' , currentRoute)" id="submit_solution_btn" class="btn btn-success">Submit!</button>
-                    <% } %>
-                    <% if(!competition){ %>
-                      <button onclick="submitSolution(testgrid, '<%= userName %>' , currentRoute)" id="submit_solution_btn" class="btn btn-success">Submit!</button>
-                    <% } %>
+                    <button id="resetBtn" onclick="resetOutputGrid()" class="btn btn-secondary">Clear grid</button>
+                    
                 </div>
+                <% if(competition == 'mini'){ %>
+                  <button onclick="submitSolutionMarioMini(testgrid, '<%= userName %>' , currentRoute)" id="submit_solution_btn" class="btn btn-success">Submit!</button>
+                <% } %>
+                <% if(competition === 'arc'){ %>
+                  <button onclick="submitSolutionMarioARC(testgrid, '<%= userName %>' , currentRoute)" id="submit_solution_btn" class="btn btn-success">Submit!</button>
+                <% } %>
+                <% if(!competition){ %>
+                  <button onclick="submitSolution(testgrid, '<%= userName %>' , currentRoute)" id="submit_solution_btn" class="btn btn-success">Submit!</button>
+                <% } %>
               </div>
                 <!-- <% //Outputgrid.forEach(item => { %> -->
                   <% item = Outputgrid %>
@@ -290,12 +293,12 @@
                   
                 </div>
                 <% //}) %>
-                <!-- <div class="btn-group"> -->
-                <button id="undo_button" class="btn btn-secondary btn-rounded" disabled >Undo</button>
-                <button id="redo_button" class="btn btn-secondary btn-rounded" disabled >Redo</button>
-                <!-- </div> -->
+                
                 <div id="toolbar" class="container-fluid row demo_row mx-auto">
-                  <div>
+                    <div id="undo-redo" class="btn-group shadow-0">
+                      <button id="undo_button" class="btn btn-secondary" disabled >Undo</button>
+                      <button id="redo_button" class="btn btn-secondary" disabled >Redo</button>
+                    </div>
                     <div id="toolbar-selection" class="btn-group shadow-0">
                       <input type="radio" class="btn-check" id="tool_edit"
                        name="tool_switching" value="edit" checked>
@@ -309,14 +312,13 @@
                        name="tool_switching" value="floodfill">
                       <label class="btn btn-secondary btn-rounded" for="tool_floodfill">Flood fill</label>
                     </div>
-                      <div id="select_util_btn" >
+                    <div id="select_util_btn" >
                         <button id="clockrotate" style="display: none;" class="btn btn-info btn-rounded" ><h4>↻</h4></i></button>
                         <button id="counterclockrotate" style="display: none;" class="btn btn-info btn-rounded"><h4>↺</h4></button>
                         <button id="xflip" style="display: none;" class="btn btn-info btn-rounded"><h4>↕</h4></button>
                         <button id="yflip" style="display: none;" class="btn btn-info btn-rounded"><h4>↔</h4></button>
                         <span class="badge rounded-pill badge-info" style="display: none;">Press Ctrl+C to copy, Ctrl+V to Paste</span>
-                      </div>
-                  </div>
+                    </div>
               </div>
 
               <div id="symbol_picker" class="btn-group container-fluid row demo_row mx-auto" role="group" aria-label="Symbol Picker">
