@@ -180,7 +180,10 @@
                           <%= item.task_name %>
                         </div>
                         <div class="col-3 border">
-                          <%= success_list[item.id]!= undefined ? String.fromCharCode(9989).repeat(success_list[item.id][0])+String.fromCharCode(9745,65039).repeat(success_list[item.id][1]-success_list[item.id][0]) : '' %>
+                          <% if (success_list[item.id]!= undefined) {%>
+                          <% var leftmultiple = success_list[item.id][1]-success_list[item.id][0]; var solvedcnt = success_list[item.id][0]; %>
+                          <%= String.fromCharCode(9989).repeat(solvedcnt)%>
+                          <%= leftmultiple ? String.fromCharCode(9745,65039).repeat(leftmultiple) : ''%>
                         </div>
                       </div>
                     <% }) %>
