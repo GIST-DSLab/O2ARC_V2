@@ -495,21 +495,7 @@ function submitSolutionMarioMini(input) {
 	// console.log(rownum)
 	// console.log(divnum/rownum)
 
-	const numbersArray = [];
-	for (let i = 0; i < rownum; i++) {
-		const rowArray = [];
-
-		for (let j = 0; j < divnum / rownum; j++) {
-			const index = i * (divnum / rownum) + j;
-			const div = divs[index];
-
-			const className = div.className;
-			const number = className.split("symbol_")[1]; // Extract the number after "symbol_"
-			rowArray.push(parseInt(number)); // Store the number in the row array
-		}
-
-		numbersArray.push(rowArray); // Store the row array in the main array
-	}
+	const numbersArray = getCurrentArray();
 
 	User_Answer = numbersArray.map((num) => parseInt(num));
 	Actual_Answer = input[1].grid.flat().map((num) => parseInt(num));
@@ -524,13 +510,17 @@ function submitSolutionMarioMini(input) {
 	}
 	console.log(input[1].grid);
 	answer = compareArrays(numbersArray, input[1].grid);
+	final = pushToTargetArray(numbersArray,'Critical','Submit',[answer],final);
+	final = {'success': answer ,'subtask': CURRENT_SUBPROBLEM,'taskcount': TOTAL_SUBPROBLEMS, 'trace': final}
 	var retVal = "";
 
 	if (!answer) {
 		retVal = "false";
+		sendLogDataMario(final)
 		alert("Wrong!");
 	} else {
 		retVal = "true";
+		sendLogDataMario(final)
 		alert("Success!");
 	}
 
@@ -755,22 +745,8 @@ function submitSolutionMarioARC(input) {
 	// console.log(rownum)
 	// console.log(divnum/rownum)
 
-	const numbersArray = [];
-	for (let i = 0; i < rownum; i++) {
-		const rowArray = [];
-
-		for (let j = 0; j < divnum / rownum; j++) {
-			const index = i * (divnum / rownum) + j;
-			const div = divs[index];
-
-			const className = div.className;
-			const number = className.split("symbol_")[1]; // Extract the number after "symbol_"
-			rowArray.push(parseInt(number)); // Store the number in the row array
-		}
-
-		numbersArray.push(rowArray); // Store the row array in the main array
-	}
-
+	const numbersArray = getCurrentArray();
+	
 	User_Answer = numbersArray.map((num) => parseInt(num));
 	Actual_Answer = input[1].grid.flat().map((num) => parseInt(num));
 
@@ -784,12 +760,16 @@ function submitSolutionMarioARC(input) {
 	}
 	console.log(input[1].grid);
 	answer = compareArrays(numbersArray, input[1].grid);
+	final = pushToTargetArray(numbersArray,'Critical','Submit',[answer],final);
+	final = {'success': answer ,'subtask': CURRENT_SUBPROBLEM,'taskcount': TOTAL_SUBPROBLEMS, 'trace': final}
 	var retVal = "";
 
 	if (!answer) {
+		sendLogDataMario(final);
 		retVal = "false";
 		alert("Wrong!");
 	} else {
+		sendLogDataMario(final);
 		retVal = "true";
 		alert("Success!");
 	}
@@ -843,4 +823,35 @@ function superSecret_arc() {
 			window.location.reload();
 		}
 	} */
+}
+function sendLogDataMario(final) {
+	const currentURL = new URL(window.location.href);
+	const pathnameSegments = currentURL.pathname.split("/");
+
+	const dynamicParam1 = pathnameSegments[2];
+	const dynamicParam2 = pathnameSegments[3];
+
+
+	const url = `/task/${dynamicParam1}/${encodeURIComponent(dynamicParam2)}/save-data`;
+	console.log(url);
+
+	fetch(url, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			numbersArray: final,
+		}),
+	})
+		.then(function (response) {
+			if (response.ok) {
+				console.log("Data saved successfully.");
+			} else {
+				console.log("Failed to save data.");
+			}
+		})
+		.catch(function (error) {
+			console.log("Error:", error);
+		});
 }
