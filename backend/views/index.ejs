@@ -9,10 +9,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href='/stylesheets/style.css'>
 
-
-
-    <script src="../public/javascripts/common.js"></script>
-    <script src="../public/javascripts/testing_interface.js"></script>
+    <script src="/javascripts/mario.js"></script>
+    <script src="/javascripts/common.js"></script>
+    <script src="/javascripts/testing_interface.js"></script>
     <title>Login Page</title>
   </head>
   <body>
@@ -45,11 +44,11 @@
                             </div>
 
                             <div class="text-center pt-1 mb-5 pb-1">
-                                <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Log
-                                in</button>
-                                <!-- a href="/mario" class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Play Games!</a>-->
-                                <a href="/mini_competition" class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Mini ARC Competition!</a>
-                                <a href="/arc_competition" class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">ARC Competition!</a>
+
+                                <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Log in</button>
+                                <!-- <a href="/mario" class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Play Games!</a> -->
+                                <a href="/mini_competition" onclick="checkPasswordAndRedirect_mini(event, '/mini_competition')" class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">mini ARC competition!</a>
+                                <a href="/arc_competition" onclick="checkPasswordAndRedirect_arc(event, '/arc_competition')" class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">ARC competition!</a>
                             </div>
                             
 

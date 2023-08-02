@@ -20,6 +20,16 @@ random_stage_arc = new Array();
 timer_start_arc = 0;
 timer_end_arc = 0;
 
+function base64EncodeUnicode(str) {
+    // First, encode the string to UTF-8 text.
+    var utf8Text = unescape(encodeURIComponent(str));
+
+    // Then, encode the UTF-8 text to Base64.
+    var base64String = btoa(utf8Text);
+
+    return base64String;
+}
+
 function checkCookie(cookieName) {
     let cookieArray = document.cookie.split(';'); // 쿠키를 세미콜론 기준으로 분리하여 배열로 만듦
 
@@ -367,6 +377,18 @@ function setCookieData_mini() {
 		document.cookie = "rs_mini=" + random_stage_mini.join("@");
 	}
 }
+
+function checkPasswordAndRedirect_mini(event, url) {
+	console.log('asdf');
+    event.preventDefault();
+    var password = base64EncodeUnicode(prompt("Please enter your password:"));
+    if (password === "7LSI7KCE64+E7LK06rCA7KaI7JWEfiE=") {  // replace "your_password" with the actual password
+        window.location.href = url;
+    } else {
+        alert("Incorrect password.");
+    }
+}
+
 /* 타이머 초기화 함수 */
 function initial_timer_mini(){
 if(!checkCookie("visited_mini")) {
@@ -538,6 +560,17 @@ function superSecret_mini() {
 			window.location.reload();
 		}
 	} */
+}
+
+function checkPasswordAndRedirect_arc(event, url) {
+	console.log('asdf');
+    event.preventDefault();
+    var password = base64EncodeUnicode(prompt("Please enter your password:"));
+    if (password === "64uk7J2M7J2AQUdJ6rCA7KaI7JWEfiE=") {  // replace "your_password" with the actual password
+        window.location.href = url;
+    } else {
+        alert("Incorrect password.");
+    }
 }
 
 function initial_timer_arc(){
