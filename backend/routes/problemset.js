@@ -180,11 +180,13 @@ router.post('/:id/:problem/save-data', (req, res) => {
 
   function insertSubmission(subid, userId, userName, taskId, taskName, numbersArray) {
     const timeStamp = new Date().toISOString();
-    const actionSequence = JSON.stringify(numbersArray);
-  
-    const sql = 'INSERT INTO submission (id, user_id, user_name, task_id, task_name, time_stamp, action_sequence) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const actionSequence = JSON.stringify(numbersArray.trace);
+    const subtask_id = parseInt(numbersArray.subtask);
+    const success = numbersArray.success ? 1 : 0;
+
+    const sql = 'INSERT INTO submission (id, user_id, user_name, task_id, task_name, time_stamp, action_sequence, subtask_id, success) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
     
-    db.run(sql, [subid, userId, userName, taskId, taskName, timeStamp, actionSequence], function(err) {
+    db.run(sql, [subid, userId, userName, taskId, taskName, timeStamp, actionSequence,subtask_id,success], function(err) {
       if (err) {
         console.error(err);
       } else {
