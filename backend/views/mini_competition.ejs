@@ -261,7 +261,38 @@
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
-				color: #c79304;
+				color: #0326ef;
+				font-size: 100%;
+				font-weight: bold;
+				text-shadow: 0 0 5px #ffcf76;
+				text-align: center;
+			}
+
+			.super-secret-red {
+				float: right;
+				position: relative;
+				height: 32px;
+				width: 12%;
+				max-width: 100px;
+				background-image: linear-gradient(135deg, #fffadc 0%, #ffd20a 100%);
+				opacity: 1;
+				border-radius: 30px 30px 30px 30px;
+				margin: 9px 10px;
+				box-shadow: 0 0 10px;
+				transition: all 0.3s ease-in-out;
+			}
+
+			.super-secret-red:hover {
+				transform: scale(1.1);
+				box-shadow: 0 0 30px;
+			}
+
+			.super-secret-red .title {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				color: #d80808;
 				font-size: 100%;
 				font-weight: bold;
 				text-shadow: 0 0 5px #ffcf76;
@@ -310,6 +341,7 @@
 			}
 		</style>
 		<script src="/javascripts/mario.js"></script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 		<script>
 			/* counting stars bam haneul wow fantastic*/
 			window.onresize = () => {
@@ -330,11 +362,11 @@
 				<div class="progress-bar-move"></div>
 				<div class="titlePER">0%</div>
 			</div>
-			<div class="super-secret">
-				<a href="/"  class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Main</a>
-			</div>
 			<div class="super-secret" onclick="superSecret_mini()">
 				<div class="title">Complete</div>
+			</div>
+			<div class="super-secret-red" onclick="showSweetAlert()">
+				<div class="title">Main</div>
 			</div>
 		</div>
 		<div class="backSky">
