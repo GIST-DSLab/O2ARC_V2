@@ -20,6 +20,21 @@ random_stage_arc = new Array();
 timer_start_arc = 0;
 timer_end_arc = 0;
 
+
+function showSweetAlert() {
+	swal({
+	  title: "메인페이지로 돌아가겠습니까?",
+	  icon: "warning",
+	  buttons: true,
+	  dangerMode: true,
+	})
+	.then((willDelete) => {
+	  if (willDelete) {
+		location.href = '/'
+	  } 
+	});
+  }
+
 function base64EncodeUnicode(str) {
     // First, encode the string to UTF-8 text.
     var utf8Text = unescape(encodeURIComponent(str));
