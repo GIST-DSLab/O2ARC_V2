@@ -2,6 +2,7 @@ var COPIED_ARRAY = [];
 var MOVEBACKUP_BG = [];
 var MOVEBACKUP_SEL = [];
 var MOVEBACKUP_DIM = {};
+var MOVEBACKUP_SELAREA = [];
 
 const miniGridSize = 200;
 const fullGridSize = 400;
@@ -46,6 +47,9 @@ $(function () {
 		MOVEBACKUP_SEL= MOVEBACKUP_SEL.map((v,i) => {
 			return {x: v.x+operation.x, y: v.y+operation.y, symbol:v.symbol};
 		});
+		MOVEBACKUP_SELAREA = MOVEBACKUP_SELAREA.map((v,i) => {
+			return {x: v.x+operation.x, y: v.y+operation.y};
+		})
 		MOVEBACKUP_DIM.minX += operation.x;
 		MOVEBACKUP_DIM.maxX += operation.x;
 		MOVEBACKUP_DIM.minY += operation.y;
@@ -65,6 +69,11 @@ $(function () {
 				let newY = Math.round(cY - sigma * (cX - v.x));
 				return {x: newX, y: newY, symbol:v.symbol};
 			});
+			MOVEBACKUP_SELAREA= MOVEBACKUP_SELAREA.map((v,i) => {
+				let newX = Math.round(cX + sigma * (cY - v.y));
+				let newY = Math.round(cY - sigma * (cX - v.x));
+				return {x: newX, y: newY};
+			});
 			newminX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.minY));
 			newmaxX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.maxY));
 			newminY = Math.round(cY - sigma * (cX - MOVEBACKUP_DIM.minX));
@@ -79,6 +88,11 @@ $(function () {
 				let newY = Math.round(cY - sigma * (cX - v.x))-modifier;
 				return {x: newX, y: newY, symbol:v.symbol};
 			});
+			MOVEBACKUP_SELAREA = MOVEBACKUP_SELAREA.map((v,i)=> {
+				let newX = Math.round(cX + sigma * (cY - v.y))-modifier;
+				let newY = Math.round(cY - sigma * (cX - v.x))-modifier;
+				return {x: newX, y: newY};
+			})
 			newminX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.minY))-modifier;
 			newmaxX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.maxY))-modifier;
 			newminY = Math.round(cY - sigma * (cX - MOVEBACKUP_DIM.minX))-modifier;
@@ -121,7 +135,9 @@ $(function () {
 		})
 		MOVEBACKUP_SEL.forEach((v,i) => {
 			unionresult[`${v.x}-${v.y}`] = v.symbol;
-
+		})
+		
+		MOVEBACKUP_SELAREA.forEach((v,i) => {
 			let jqCell = $(`#cell_${v.x}-${v.y}`);
 			if(jqCell.length)
 				jqCell.addClass('ui-selected');
@@ -399,6 +415,8 @@ function separateSelection(){
 	MOVEBACKUP_BG=[];
 	MOVEBACKUP_SEL=[];
 	MOVEBACKUP_DIM=[];
+	MOVEBACKUP_SELAREA = [];
+
 	$('#test_output_grid .cell_final').each( (i,e)=>{
 		// color
 		let sym = parseInt($(e).attr('class').match(/symbol_([0-9])/)[1]);
@@ -412,14 +430,16 @@ function separateSelection(){
 
 		if(isSelected){
 			// if selected and Not zero, push
+			minX = Math.min(minX,x);
+			minY = Math.min(minY,y);
+			maxX = Math.max(maxX,x);
+			maxY = Math.max(maxY,y);
 			
 			if(sym != 0){
 				MOVEBACKUP_SEL.push({x,y,symbol:sym });
-				minX = Math.min(minX,x);
-				minY = Math.min(minY,y);
-				maxX = Math.max(maxX,x);
-				maxY = Math.max(maxY,y);
+				
 			}
+			MOVEBACKUP_SELAREA.push({x,y});
 			MOVEBACKUP_BG.push({x,y,symbol:0 });
 		} else {
 			MOVEBACKUP_BG.push({x,y,symbol:sym });
