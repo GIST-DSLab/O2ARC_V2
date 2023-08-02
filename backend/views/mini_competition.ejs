@@ -238,15 +238,15 @@
 			}
 
 			.super-secret {
-				float: right;
 				position: relative;
 				height: 32px;
 				width: 12%;
-				max-width: 100px;
+				width: 400px;
+				height: 150px;
 				background-image: linear-gradient(135deg, #fffadc 0%, #ffd20a 100%);
 				opacity: 1;
-				border-radius: 30px 30px 30px 30px;
-				margin: 9px 10px;
+				border-radius: 75px 75px 75px 75px;
+				margin: 80px auto;
 				box-shadow: 0 0 10px;
 				transition: all 0.3s ease-in-out;
 			}
@@ -261,13 +261,28 @@
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
-				color: #0326ef;
-				font-size: 100%;
+				color: #eea622;
+				font-size: 50px;
 				font-weight: bold;
 				text-shadow: 0 0 5px #ffcf76;
 				text-align: center;
 			}
 
+			.super-secret.disabled {
+				background-image: linear-gradient(135deg, #ededed 0%, #999999 100%);
+				transition: none;
+			}
+			
+			.super-secret.disabled:hover {
+				transform: none;
+				box-shadow: 0 0 10px;
+			}
+			.super-secret.disabled .title{
+				color: #5c5c5c;
+				transform: translate(-50%, -50%);
+				text-shadow: 0 0 5px #575757;
+				translate: none;
+			}
 			.super-secret-red {
 				float: right;
 				position: relative;
@@ -292,7 +307,7 @@
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
-				color: #d80808;
+				color: #CCA808;
 				font-size: 100%;
 				font-weight: bold;
 				text-shadow: 0 0 5px #ffcf76;
@@ -350,9 +365,16 @@
 
 			window.onload = () => {
 				setCookieData_mini();
-				checkResult_mini();
+
 				makeStars();
-				initial_timer_mini()
+				initial_timer_mini();
+				WOWTimer= setInterval(()=>{
+					let t = (Date.now() - getCookieValue('start_mini') )/1000;
+					let min = Math.floor(t/60);
+					let sec = t-min*60;
+					document.querySelector('.super-secret .title').innerHTML = min+':'+(sec.toFixed(0).padStart(2,0));
+				},500);
+				checkResult_mini();
 			};
 		</script>
 	</head>
@@ -362,9 +384,7 @@
 				<div class="progress-bar-move"></div>
 				<div class="titlePER">0%</div>
 			</div>
-			<div class="super-secret" onclick="superSecret_mini()">
-				<div class="title">Complete</div>
-			</div>
+			
 			<div class="super-secret-red" onclick="showSweetAlert()">
 				<div class="title">Main</div>
 			</div>
@@ -383,8 +403,8 @@
 						</div>
 					</div>
 					<%}%>
-					<div class="col-sm-12 col-md-6 col-lg-4">
-						<div class="stage-parent"></div>
+					<div class="super-secret disabled"  onclick="superSecret_mini()">
+						<div class="title"></div>
 					</div>
 				</div>
 			</div>

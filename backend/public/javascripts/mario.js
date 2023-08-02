@@ -464,6 +464,13 @@ function checkResult_mini() {
 	document.getElementsByClassName("titlePER")[0].innerHTML =
 		per.toString() + "%";
 
+	if(clear_stage_list_mini.length === TOTAL_STAGE){
+		document.querySelector('.super-secret.disabled').classList.remove('disabled');
+		document.querySelector('.super-secret .title').innerHTML = 'Click!'
+		clearInterval(WOWTimer);
+		
+	}
+
 	for (let elem of fail_stage_list_mini) {
 		let stage_html = document.getElementById(elem);
 		stage_html.firstElementChild.className = "stage-fail";
@@ -681,6 +688,7 @@ function checkResult_arc() {
 			fail_stage_list_arc.push(num);
 			document.cookie = "fsl_arc=" + fail_stage_list_arc.join("@");
 		} */
+		clearInterval(WOWTimer);
 		document.cookie = "ls_arc=" + String(-123);
 		last_stage_arc = -123;
 		location.href = "/arc_competition";
@@ -716,6 +724,12 @@ function checkResult_arc() {
 		per.toString() + "%";
 	document.getElementsByClassName("titlePER")[0].innerHTML =
 		per.toString() + "%";
+
+	if(clear_stage_list_arc.length === TOTAL_STAGE){
+		document.querySelector('.super-secret.disabled').classList.remove('disabled');
+		document.querySelector('.super-secret .title').innerHTML = 'Click!'
+		clearInterval(WOWTimer);
+	}
 
 	for (let elem of fail_stage_list_arc) {
 		let stage_html = document.getElementById(elem);
