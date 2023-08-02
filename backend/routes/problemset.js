@@ -26,7 +26,7 @@ router.get('/:id', async function(req, res, next) {
         sucData = await userhelper.getSuccessList(userName);
         sucDataDict = {}; 
         
-        sucData.forEach((v,i)=> sucDataDict[v.task_id] = [v['count(*)'],v['max(subtask_count)']?v['max(subtask_count)']:1]);
+        sucData.forEach((v,i)=> sucDataDict[v.task_id] = [v['solcnt'],v['totalcnt']?v['totalcnt']:1]);
     } catch (err) {
         console.log(err)
         return res.status(500).send("Internal Server Error")

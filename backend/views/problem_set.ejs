@@ -183,7 +183,7 @@
                           <% if (success_list[item.id]!= undefined) {%>
                           <% var leftmultiple = success_list[item.id][1]-success_list[item.id][0]; var solvedcnt = success_list[item.id][0]; %>
                           <%= String.fromCharCode(9989).repeat(solvedcnt)%>
-                          <%= leftmultiple ? String.fromCharCode(9745,65039).repeat(leftmultiple) : ''%>
+                          <%= leftmultiple>0 ? String.fromCharCode(9745,65039).repeat(leftmultiple) : ''%>
                           <% }%>
                         </div>
                       </div>
