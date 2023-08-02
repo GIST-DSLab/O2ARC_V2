@@ -134,7 +134,7 @@
                           <%= item.task_name %>
                         </div>
                         <div class="col-3 border">
-                          &#9989
+                          <%= success_list.includes(item.id)? String.fromCharCode(9989) : '' %>
                         </div>
                       </div>
                     <% }) %>
@@ -180,7 +180,7 @@
                           <%= item.task_name %>
                         </div>
                         <div class="col-3 border">
-                          &#9989
+                          <%= success_list.includes(item.id)? String.fromCharCode(9989) : '' %>
                         </div>
                       </div>
                     <% }) %>

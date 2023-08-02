@@ -13,6 +13,7 @@ router.get('/:id', async function(req, res, next) {
     const userName = req.params.id
     var data
     var data2
+    var sucData
     // var minirand = logic_function.getRandomInt(5948,6096)
 
     console.log(userName)
@@ -22,7 +23,9 @@ router.get('/:id', async function(req, res, next) {
         // data2 = await userhelper.getARCList(userName);
         data = await userhelper.getARCList_test(userName,mini=true);
         data2 = await userhelper.getARCList_test(userName);
-
+        sucData = await userhelper.getSuccessList(userName);
+        sucData = sucData.map((v,i)=>v.task_id)
+        console.log(sucData);
     } catch (err) {
         console.log(err)
         return res.status(500).send("Internal Server Error")
@@ -32,6 +35,7 @@ router.get('/:id', async function(req, res, next) {
         userName: userName,
         miniARC_idlist: data,
         ARC_idlist: data2,
+        success_list: sucData, 
     })
 
 
@@ -182,11 +186,12 @@ router.post('/:id/:problem/save-data', (req, res) => {
     const timeStamp = new Date().toISOString();
     const actionSequence = JSON.stringify(numbersArray.trace);
     const subtask_id = parseInt(numbersArray.subtask);
+    const subtask_count = parseInt(numbersArray.taskcount);
     const success = numbersArray.success ? 1 : 0;
 
-    const sql = 'INSERT INTO submission (id, user_id, user_name, task_id, task_name, time_stamp, action_sequence, subtask_id, success) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO submission (id, user_id, user_name, task_id, task_name, time_stamp, action_sequence, subtask_id, success, subtask_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     
-    db.run(sql, [subid, userId, userName, taskId, taskName, timeStamp, actionSequence,subtask_id,success], function(err) {
+    db.run(sql, [subid, userId, userName, taskId, taskName, timeStamp, actionSequence,subtask_id,success,subtask_count], function(err) {
       if (err) {
         console.error(err);
       } else {

@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./db/O2ARC.db');
   
-module.exports.getARCList = async function (userName, mini = false){
+var getARCList = async function (userName, mini = false){
     const query = 'SELECT id, task_name FROM tasklist WHERE type = ?';
     const params = [];
     if(mini){
@@ -23,7 +23,7 @@ module.exports.getARCList = async function (userName, mini = false){
     })
   }
 
-module.exports.getARCList_test = async function (userName, mini = false){
+var getARCList_test = async function (userName, mini = false){
   const query = 'SELECT id, task_name FROM HappyARC WHERE type = ?';
   const params = [];
   if(mini){
@@ -43,4 +43,26 @@ module.exports.getARCList_test = async function (userName, mini = false){
           }
         });
   })
+}
+
+var getSuccessList = async function(userName){
+  const query = 'SELECT task_id FROM submission WHERE user_name = ? AND success = 1 ';
+  return new Promise((resolve, reject) => {
+    db.all(query, [userName], (err, rows) => {
+          if (err) {
+            reject(err);
+            //db.close()
+          } else {
+    
+            resolve(rows);
+            //db.close()
+          }
+        });
+  })
+}
+
+module.exports = {
+  getARCList,
+  getARCList_test,
+  getSuccessList
 }

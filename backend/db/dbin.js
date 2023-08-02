@@ -6,9 +6,12 @@ db.run(`CREATE TABLE IF NOT EXISTS submission (
     user_id TEXT,
     user_name TEXT,
     task_id INTEGER,
+    subtask_id INTEGER,
+    subtask_count INTEGER,
     task_name TEXT,
-    time_stamp TEXT,
-    action_sequence TEXT
+    success INTEGER,
+    action_sequence TEXT,
+    time_stamp TEXT
   )`)
 
 
