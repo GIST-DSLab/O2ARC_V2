@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Log Visualizer</title>
+
+
+    <!-- Font Awesome -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+    rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+    rel="stylesheet"
+    />
+
+    <style>
+        :root {
+          --cell-size: <%= p %>px; /* set the initial value of the CSS variable */
+        }
+        .cell_final {
+          /* height: var(--cell-size);
+          width: var(--cell-size); */
+          border-left: 1px solid #555;
+          border-top: 1px solid #555;
+          background-color: #000;
+          padding-right: 0px;
+          padding-left: 0px;
+  
+        }
+      </style>
+
+<link rel="stylesheet" href='/stylesheets/style.css'>
+
+
+</head>
+<body>
+     <!-- MDB -->
+    <script 
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+    <script>
+        var testgrid = <%- JSON.stringify(Testgrid) %> ;
+        var currentRoute = window.location.href;
+    </script>
+     
+    <script src="/javascripts/jquery.js"></script>
+
+
+      <!--Main Navigation-->
+    <header>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top ">
+        <div class="container-fluid">
+            
+    <div id="main">
+        <div id="menu">
+        <div class="boxed">
+            <h3>TASK NAME</h3>
+            <label id='current_task_name' for="random_task_btn"></label>
+            <label id='current_task_desc' for="random_task_btn"> </label>
+            </div>
+            <br/>
+            <br />
+            <br/>
+            <div class="logpair">
+                <div class="loggrid" id="input_grid"></div>
+                    <h4>&#8594;</h4>
+                <div class="loggrid" id="output_grid"></div>
+            </div>
+            <div class = "overview" id= "overview"><a id = "active" >OVERVIEW</a></div>
+
+        </p>
+        </div>
+        <div id="visualization">
+            <div class = "overview_page" id ='overview_page' hidden = "false">
+                <div class = "training_text">TRAINING EXAMPLES</div>
+
+                <div class="test_grids" id = "testview"></div>
+            </div>
+            <div class="grid" id="show_grid">
+                <div id="grid_control">
+                </div>
+                <div class = "trace_text" id = "trace_text">Trace</div>
+                <div class="grid" id="main_grid"></div>
+                <label id="action_tool"></label>
+            </div>
+        </div>
+
+
+
+
+        </p>
+
+        <div id="evaluation">
+            <div class="evaluation_text">
+                <h3>Evaluate the trace</h3>
+
+
+            </div>
+            <div class = "survey" id = "points">
+                <div id = "good?1"> Is it a good solution? (1 ~ 5) :
+                </br>
+                    <input type="text" id="point_for_goodtrace1"/>
+                <div id = "good2?"> Is this trace use object? [y/n] :
+                </br>
+                    <input type="text" id="Is_this_trace_use_object"/>
+                </br>
+                <div id = "good3?"> description? :
+                </br>
+                    <input type="text" id="description"/>
+                <div id = "good4?"> Is this trace general? [y/n]:
+                </br>
+                    <input type="text" id="general"/>
+                <div id = "good5?"> Is this trace better than yours? [y/n] :
+                </br>
+                    <input type="text" id="better"/>
+                </div>
+                </br>
+                <button onclick="submit_evaluation()" id="submit_btn">Submit the point</button>
+                <button onclick="backToMain()">Back to the main page</button>
+            </div>
+        </div>
+
+    </div>
+    <div id="action">
+        <div id = "description_text">Description</div>
+        <label id="action_description"></label>
+    </div>
+
+
+</body>
+
+</html>

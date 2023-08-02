@@ -9,11 +9,40 @@ clear_stage_list_mini = new Array();
 fail_stage_list_mini = new Array();
 last_stage_mini = -123;
 random_stage_mini = new Array();
+timer_start_mini = 0;
+timer_end_mini = 0;
+first_flag_mini = false;
 
 clear_stage_list_arc = new Array();
 fail_stage_list_arc = new Array();
 last_stage_arc = -123;
 random_stage_arc = new Array();
+timer_start_arc = 0;
+timer_end_arc = 0;
+
+function checkCookie(cookieName) {
+    let cookieArray = document.cookie.split(';'); // 쿠키를 세미콜론 기준으로 분리하여 배열로 만듦
+
+    for(let i = 0; i < cookieArray.length; i++) {
+        let cookie = cookieArray[i].trim(); // trim 메소드로 앞뒤 공백 제거
+        if (cookie.indexOf(cookieName) === 0) { // cookieName으로 시작하는 쿠키가 있는지 확인
+            return true;
+        }
+    }
+    return false; // for loop를 다 돌았는데도 cookieName으로 시작하는 쿠키를 찾지 못했으므로 false 반환
+}
+
+function getCookieValue(cookieName) {
+    let cookieArray = document.cookie.split(';'); // 쿠키를 세미콜론 기준으로 분리하여 배열로 만듦
+
+    for(let i = 0; i < cookieArray.length; i++) {
+        let cookie = cookieArray[i].trim(); // trim 메소드로 앞뒤 공백 제거
+        if (cookie.indexOf(cookieName) === 0) { // cookieName으로 시작하는 쿠키가 있는지 확인
+            return cookie.substring(cookieName.length + 1); // '='을 포함하기 위해 +1을 함. cookieName 다음부터 끝까지가 값임
+        }
+    }
+    return ""; // for loop를 다 돌았는데도 cookieName으로 시작하는 쿠키를 찾지 못했으므로 빈 문자열 반환
+}
 
 /* @@@@@@@@@@@@@@@@@ 돌아가는 별자리 함수 @@@@@@@@@@@@@@@@@ */
 /* 랜덤 int 가져오는 함수 */
@@ -338,6 +367,15 @@ function setCookieData_mini() {
 		document.cookie = "rs_mini=" + random_stage_mini.join("@");
 	}
 }
+/* 타이머 초기화 함수 */
+function initial_timer_mini(){
+if(!checkCookie("visited_mini")) {
+		alert("시작할때까지 잠시만 기다려주세요.");
+		document.cookie = 'visited_mini=true;';
+		timer_start_mini = Date.now();
+		document.cookie = `start_mini=${timer_start_mini}`;
+	}
+}
 
 /* save data in cookies */
 function checkResult_mini() {
@@ -459,21 +497,33 @@ function submitSolutionMarioMini(input) {
 
 /* super secret */
 function superSecret_mini() {
-	clear_stage_list_mini = atob(clear_stage_list_mini).split('@')
-	clear_stage_list_mini = clear_stage_list_mini.filter((element) => element !== '')
+	// clear_stage_list_mini = atob(clear_stage_list_mini).split('@')
+	// clear_stage_list_mini = clear_stage_list_mini.filter((element) => element !== '')
 
 	if (TOTAL_STAGE == clear_stage_list_mini.length) {
-		alert("Congraturation!");
-		if (!confirm("Reset?")) {
-			// alert("None")
-		} else {
-			document.cookie = "csl_mini=";
-			document.cookie = "fsl_mini=";
-			document.cookie = "ls_mini=";
-			document.cookie = "rs_mini=";
-			window.location.reload();
+		if(!checkCookie("end_mini")) {
+		// 타이머 멈추는 코드 구현
+			timer_end_mini = Date.now();
+			timer_start_mini = Number(getCookieValue('start_mini'))
+			const diff = timer_end_mini - timer_start_mini;
+			const sec = Math.floor(diff / 1000);
+			alert(`Congraturation! ${sec}`);
+			document.cookie = `end_mini=${sec}`;
+		} else{
+			sec = Number(getCookieValue('end_mini'))
+			alert(`Congraturation! ${sec}`);
 		}
-	} else {
+		
+		// if (!confirm("Reset?")) {
+		// 	// alert("None")
+		// } else {
+		// 	document.cookie = "csl_mini=";
+		// 	document.cookie = "fsl_mini=";
+		// 	document.cookie = "ls_mini=";
+		// 	document.cookie = "rs_mini=";
+		// 	window.location.reload();
+		// }
+	} /*else {
 		if (
 			!confirm(
 				"You can get reward when you achieve 100%\nDo you want to reset?"
@@ -487,8 +537,17 @@ function superSecret_mini() {
 			document.cookie = "rs_mini=";
 			window.location.reload();
 		}
-	}
+	} */
 }
+
+function initial_timer_arc(){
+	if(!checkCookie("visited_arc")) {
+			alert("시작할때까지 잠시만 기다려주세요.");
+			document.cookie = 'visited_arc=true;';
+			timer_start_arc = Date.now();
+			document.cookie = `start_arc=${timer_start_arc}`;
+		}
+	}
 
 // ARC competition을 위한 코드
 function setCookieData_arc() {
@@ -680,21 +739,34 @@ function submitSolutionMarioARC(input) {
 
 /* super secret */
 function superSecret_arc() {
-	clear_stage_list_arc = atob(clear_stage_list_arc).split('@')
-	clear_stage_list_arc = clear_stage_list_arc.filter((element) => element !== '')
+	// clear_stage_list_arc = atob(clear_stage_list_arc).split('@')
+	// clear_stage_list_arc = clear_stage_list_arc.filter((element) => element !== '')
 
 	if (TOTAL_STAGE == clear_stage_list_arc.length) {
-		alert("Congraturation!");
+		// 타이머 멈추는 코드 구현
+		if(!checkCookie("end_arc")) {
+			// 타이머 멈추는 코드 구현
+				timer_end_arc = Date.now();
+				timer_start_arc = Number(getCookieValue('start_arc'))
+				const diff = timer_end_arc - timer_start_arc;
+				const sec = Math.floor(diff / 1000);
+				alert(`Congraturation! ${sec} sec`);
+				document.cookie = `end_arc=${sec}`;
+			}else{
+				sec = Number(getCookieValue('end_arc'))
+				alert(`Congraturation! ${sec}`);
+			}
+		/*
 		if (!confirm("Reset?")) {
 			// alert("None")
-		} else {
+		} /*else {
 			document.cookie = "csl_arc=";
 			document.cookie = "fsl_arc=";
 			document.cookie = "ls_arc=";
 			document.cookie = "rs_arc=";
 			window.location.reload();
-		}
-	} else {
+		} */
+	} /* else {
 		if (
 			!confirm(
 				"You can get reward when you achieve 100%\nDo you want to reset?"
@@ -708,5 +780,5 @@ function superSecret_arc() {
 			document.cookie = "rs_arc=";
 			window.location.reload();
 		}
-	}
+	} */
 }

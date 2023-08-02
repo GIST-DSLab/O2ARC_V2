@@ -27,7 +27,31 @@
     type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
     ></script>
-
+    <script>
+      function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      function getMiniRand(){
+        var minirand = getRandomInt(5948,6096)
+        const random_stage_mini = [5952,5971,5978,5983,6015,6018,6021,6022,6026,6033,6048,6055]
+        if (random_stage_mini.indexOf(minirand)!=-1) {
+          minirand+=2
+        }
+        window.location.href =  window.location.href+'/'+minirand
+      }
+      function getARCRand(){
+        // var rand = logic_function.getRandomInt(6098,6496)
+        var rand = getRandomInt(6098,6496)
+        const random_stage_arc = [6186, 6227, 6241, 6247, 6268, 6271, 6291, 6299, 6303, 6309, 6410, 6490]
+        if (random_stage_arc.indexOf(rand)!=-1) {
+          rand+=2
+        } 
+        window.location.href =  window.location.href+'/'+rand
+      }
+      
+    </script>
 
       <!--Main Navigation-->
     <header>
@@ -84,10 +108,9 @@
                     Some quick example text to build on the card title and make up the bulk of the
                     card's content.
                   </p>
-                  <% var rand = userName + '/' + ran1 %>
-                  <% var rand2 = '/' + 'IQtest' + '/' + userName + '/' + ran1 %>
-                  <a href=<%= rand %> class="btn btn-primary" >Solve Randomly</a>
-                  <a href=<%= rand2 %> class="btn btn-primary" >Let test your IQ!</a>
+
+                  <a onclick="getMiniRand()" class="btn btn-primary" >Solve Randomly</a>
+                  <!-- <a href=<%= //rand2 %> class="btn btn-primary" >Let test your IQ!</a> -->
    
                   <div class="container border mt-5 pt-3" style="height:500px; overflow-y: scroll;">
                     <div class="row pb-2">
@@ -134,8 +157,7 @@
                     Some quick example text to build on the card title and make up the bulk of the
                     card's content.
                   </p>
-                  <% var rand = userName + '/' + ran2 %>
-                  <a href=<%= rand %> class="btn btn-primary" >Solve Randomly</a>
+                  <a onclick="getARCRand()" class="btn btn-primary" >Solve Randomly</a>
                   <div class="container border mt-5 pt-3" style="height:500px; overflow-y: scroll;">
                     <div class="row pb-2">
                       <div class="col-3">

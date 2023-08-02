@@ -14,17 +14,7 @@ router.get('/:id', async function(req, res, next) {
     var data
     var data2
     // var minirand = logic_function.getRandomInt(5948,6096)
-    var minirand = logic_function.getRandomInt(5948,6096)
-    const random_stage_mini = [5952,5971,5978,5983,6015,6018,6021,6022,6026,6033,6048,6055]
-    if (random_stage_mini.indexOf(minirand)!=-1) {
-      minirand+=2
-    }
-    // var rand = logic_function.getRandomInt(6098,6496)
-    var rand = logic_function.getRandomInt(6098,6496)
-    const random_stage_arc = [6186, 6227, 6241, 6247, 6268, 6271, 6291, 6299, 6303, 6309, 6410, 6490]
-    if (random_stage_arc.indexOf(rand)!=-1) {
-      rand+=2
-    }
+
     console.log(userName)
 
     try{
@@ -42,8 +32,6 @@ router.get('/:id', async function(req, res, next) {
         userName: userName,
         miniARC_idlist: data,
         ARC_idlist: data2,
-        ran1: minirand,
-        ran2: rand
     })
 
 

@@ -1,33 +1,95 @@
 var COPIED_ARRAY = [];
+var originalSelectedCellIds = [];
 
 const miniGridSize = 200;
 const fullGridSize = 400;
-var final = [];
+var final = []
+
+// Undo and Redo History Stacks
+var historyStack = []
+var undoHistory = []
+
+const Actions = ['Color', 'Fill', 'FlipX', 'FlipY', 'RotateCW', 'RotateCCW', 'Copy', 'Paste', 'Move', 'FloodFill', 'Undo', 'Redo'];
+const CriticalActions = ['CopyFromInput', 'ResetGrid', 'ResizeGrid', 'Submit'];
+var moveDescript = ''
 
 var TOTAL_SUBPROBLEMS;
 var CURRENT_SUBPROBLEM;
 
-const Actions = [
-	"Color",
-	"Fill",
-	"FlipX",
-	"FlipY",
-	"RotateCW",
-	"RotateCCW",
-	"Copy",
-	"Paste",
-	"Move",
-	"FloodFill",
-];
-const CriticalActions = ["CopyFromInput", "ResetGrid", "ResizeGrid", "Submit"];
-var moveDescript = "";
 var selection = [];
 $(function () {
 	final = []
 	selection = []
 	rownum = testgrid[0].height;
 	colnum = testgrid[0].width;
-	$("#output_grid_size").val(rownum + "x" + colnum);
+	$("#output_grid_height").val(rownum);
+	$("#output_grid_width").val(colnum);
+
+	let previousGridState = {};
+
+	function handleSelectStart() {
+		// select cell stored
+
+		// originalSelectedCellIds = $("#test_output_grid")
+		// 	.map(function () {
+		// 		return { id: this.id, class: this.className };
+		// 	})
+		// 	.get();
+		// console.log("cell state : ", originalSelectedCellIds);
+
+		var selectedIds = getSelectedCellIds();
+		selectedIdsBeforeMove = selectedIds;
+		var symbols = getSymbolClassesFromCellIds(selectedIds);
+		var coordinates = convertCellIdsToCoordinates(selectedIds);
+		var size = calculateRectangleSize(coordinates);
+		var planesymbol = saveInRectangle(symbols, size.width, size.height);
+		var planeid = saveInRectangle(selectedIds, size.width, size.height);
+		removeSelectedClass();
+		return { planeid, planesymbol };
+	}
+
+	function handleCellMove(planeid, planesymbol, operation) {
+		// move cell operation
+		var newXPlaneId = planeid.map(function (row) {
+			return row.map(function (cell) {
+				var [_, x, y] = cell.split(/[-_]/);
+				return `cell_${parseInt(x) + operation.x}-${parseInt(y) + operation.y}`;
+			});
+		});
+
+		var isValid = newXPlaneId.every(function (row) {
+			return row.every(function (cell) {
+				return $(`#${cell}`).length === 1;
+			});
+		});
+
+		if (!isValid) {
+			addSelectedClass(planeid);
+			return null;
+		}
+
+		planeid.forEach(function (row) {
+			row.forEach(function (cell) {
+				var oldCell = $(`#${cell}`);
+				var symbolClass = oldCell.attr("class").match(/symbol_[0-9]/)[0];
+				oldCell.removeClass(symbolClass).addClass("symbol_0"); // Assuming "symbol_0" is the class for black
+			});
+		});
+		return newXPlaneId;
+	}
+
+	function handleSelectEnd(newXPlaneId, planesymbol) {
+		// select cell end
+		if (newXPlaneId !== null) {
+			moveDescript = 'Move'
+			updateCellClasses(newXPlaneId, planesymbol);
+			addSelectedClass(newXPlaneId);
+			
+			recordGridchange();
+		} else {
+			selection = [];
+		}
+	}
 
 	document.querySelectorAll('.form-outline').forEach((formOutline) => {
 		new mdb.Input(formOutline).init();
@@ -45,6 +107,10 @@ $(function () {
 		$(`label[for=tool_${selectedToolMode}]`).addClass('bg-primary text-white');
 	});
 
+	//reset undo redo feature
+    resetHistoryStack();
+
+    // Select Mode Action Buttons 
 	$("input[name=tool_switching]").on("focus", function () {
 		$(":focus").trigger("blur");
 
@@ -73,17 +139,19 @@ $(function () {
 			var planesymbol = saveInRectangle(symbols, size.width, size.height);
 			var planeid = saveInRectangle(selectedIds, size.width, size.height);
 
-			if (buttonName == "xflip") {
-				moveDescript = "FlipX";
-				var changed_symbol = flipArrayX(planesymbol);
+			if (buttonName == 'xflip') {
+				moveDescript = 'FlipX';
+				var changed_symbol = flipArrayX(planesymbol)
 				console.log("-- Action: X Flip\n---- Changed:", changed_symbol);
-				updateCellClasses(planeid, changed_symbol);
+				updateCellClasses(planeid, changed_symbol)
+				recordGridchange();
 			}
-			if (buttonName == "yflip") {
-				moveDescript = "FlipY";
-				var changed_symbol = flipArrayY(planesymbol);
+			if (buttonName == 'yflip') {
+				moveDescript = 'FlipY';
+				var changed_symbol = flipArrayY(planesymbol)
 				console.log("-- Action: Y Flip\n---- Changed:", changed_symbol);
-				updateCellClasses(planeid, changed_symbol);
+				updateCellClasses(planeid, changed_symbol)
+				recordGridchange();
 			}
 			if (buttonName == "clockrotate") {
 				moveDescript = "RotateCW";
@@ -104,6 +172,7 @@ $(function () {
 
 				addSelectedClass(changed_id);
 				updateCellClasses(changed_id, changed_symbol);
+				recordGridchange();
 			}
 			if (buttonName == "counterclockrotate") {
 				moveDescript = "RotateCCW";
@@ -124,6 +193,7 @@ $(function () {
 
 				addSelectedClass(changed_id);
 				updateCellClasses(changed_id, changed_symbol);
+				recordGridchange();
 			}
 		}
 	});
@@ -227,6 +297,7 @@ $(function () {
 					}
 				}
 				moveDescript = "Paste";
+                recordGridchange();
 				selection = [[pasteCellX,pasteCellY]]
 				console.log(
 					`-- Action: Paste Array\n---- Where: (${pasteCellX},${pasteCellY}) ~ (${
@@ -239,189 +310,146 @@ $(function () {
 				return;
 			}
 		} else if (event.ctrlKey && event.key === "z" && !event.shiftKey) {
-		} else if (event.ctrlKey && event.shiftKey && event.key === "z") {
+            handleUndoAction();
+		} else if (event.ctrlKey && event.key === "y") {
+            handleRedoAction();
 		} else if (event.key === "w" || event.key === "ArrowUp") {
-			//여기부터 수정 -------------------------------------------//
+			//Key Move Event//
 			event.preventDefault(); // Prevent scrolling
 
-			moveDescript = "MoveUp";
-			var selectedIds = getSelectedCellIds(); // getSelectedCellIds() 함수를 호출하여 선택된 셀의 ID를 가져옴
-			var symbols = getSymbolClassesFromCellIds(selectedIds);
-			var coordinates = convertCellIdsToCoordinates(selectedIds);
-			var size = calculateRectangleSize(coordinates);
-			var planesymbol = saveInRectangle(symbols, size.width, size.height);
-			var planeid = saveInRectangle(selectedIds, size.width, size.height);
-			removeSelectedClass();
-
-			// Moving up reduces the y-coordinate by 1
-			var newYPlaneId = planeid.map(function (row) {
-				return row.map(function (cell) {
-					var [_, x, y] = cell.split(/[-_]/);
-					console.log(x, y);
-					return `cell_${parseInt(x) - 1}-${y}`;
-				});
-			});
-
-			// Check if the new location is valid
-			var isValid = newYPlaneId.every(function (row) {
-				return row.every(function (cell) {
-					return $(`#${cell}`).length === 1;
-				});
-			});
-
-			if (!isValid) {
-				// If the new location is not valid, reselect the original cells and return
-				addSelectedClass(planeid);
-				return;
-			}
-			planeid.forEach(function (row) {
-				row.forEach(function (cell) {
-					var oldCell = $(`#${cell}`);
-					var symbolClass = oldCell.attr("class").match(/symbol_[0-9]/)[0];
-					oldCell.removeClass(symbolClass).addClass("symbol_0"); // Assuming "symbol_0" is the class for black
-				});
-			});
-
-			console.log("-- Action: Move Up\n---- Changed:", newYPlaneId);
-			updateCellClasses(newYPlaneId, planesymbol);
-			addSelectedClass(newYPlaneId);
+			var { planeid, planesymbol } = handleSelectStart();
+			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: -1, y: 0 });
+			selection = ['U'];
+			handleSelectEnd(newXPlaneId, planesymbol);
 		} else if (event.key === "a" || event.key === "ArrowLeft") {
 			event.preventDefault(); // Prevent scrolling
 
-			moveDescript = "MoveLeft";
-			var selectedIds = getSelectedCellIds(); // getSelectedCellIds() 함수를 호출하여 선택된 셀의 ID를 가져옴
-			var symbols = getSymbolClassesFromCellIds(selectedIds);
-			var coordinates = convertCellIdsToCoordinates(selectedIds);
-			var size = calculateRectangleSize(coordinates);
-			var planesymbol = saveInRectangle(symbols, size.width, size.height);
-			var planeid = saveInRectangle(selectedIds, size.width, size.height);
-			removeSelectedClass();
-
-			// Moving up reduces the y-coordinate by 1
-			var newYPlaneId = planeid.map(function (row) {
-				return row.map(function (cell) {
-					var [_, x, y] = cell.split(/[-_]/);
-					console.log(x, y);
-					return `cell_${x}-${parseInt(y) - 1}`;
-				});
-			});
-
-			// Check if the new location is valid
-			var isValid = newYPlaneId.every(function (row) {
-				return row.every(function (cell) {
-					return $(`#${cell}`).length === 1;
-				});
-			});
-
-			if (!isValid) {
-				// If the new location is not valid, reselect the original cells and return
-				addSelectedClass(planeid);
-				return;
-			}
-			planeid.forEach(function (row) {
-				row.forEach(function (cell) {
-					var oldCell = $(`#${cell}`);
-					var symbolClass = oldCell.attr("class").match(/symbol_[0-9]/)[0];
-					oldCell.removeClass(symbolClass).addClass("symbol_0"); // Assuming "symbol_0" is the class for black
-				});
-			});
-
-			console.log("-- Action: Move Left\n---- Changed:", newYPlaneId);
-			updateCellClasses(newYPlaneId, planesymbol);
-			addSelectedClass(newYPlaneId);
+			var { planeid, planesymbol } = handleSelectStart();
+			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: 0, y: -1 });
+			selection = ['L'];
+			handleSelectEnd(newXPlaneId, planesymbol);
 		} else if (event.key === "s" || event.key === "ArrowDown") {
 			event.preventDefault(); // Prevent scrolling
 
-			moveDescript = "MoveDown";
-			var selectedIds = getSelectedCellIds(); // getSelectedCellIds() 함수를 호출하여 선택된 셀의 ID를 가져옴
-			var symbols = getSymbolClassesFromCellIds(selectedIds);
-			var coordinates = convertCellIdsToCoordinates(selectedIds);
-			var size = calculateRectangleSize(coordinates);
-			var planesymbol = saveInRectangle(symbols, size.width, size.height);
-			var planeid = saveInRectangle(selectedIds, size.width, size.height);
-			removeSelectedClass();
-
-			// Moving up reduces the y-coordinate by 1
-			var newYPlaneId = planeid.map(function (row) {
-				return row.map(function (cell) {
-					var [_, x, y] = cell.split(/[-_]/);
-					console.log(x, y);
-					return `cell_${parseInt(x) + 1}-${y}`;
-				});
-			});
-
-			// Check if the new location is valid
-			var isValid = newYPlaneId.every(function (row) {
-				return row.every(function (cell) {
-					return $(`#${cell}`).length === 1;
-				});
-			});
-
-			if (!isValid) {
-				// If the new location is not valid, reselect the original cells and return
-				addSelectedClass(planeid);
-				return;
-			}
-			planeid.forEach(function (row) {
-				row.forEach(function (cell) {
-					var oldCell = $(`#${cell}`);
-					var symbolClass = oldCell.attr("class").match(/symbol_[0-9]/)[0];
-					oldCell.removeClass(symbolClass).addClass("symbol_0"); // Assuming "symbol_0" is the class for black
-				});
-			});
-
-			console.log("-- Action: Move Down\n---- Changed:", newYPlaneId);
-			updateCellClasses(newYPlaneId, planesymbol);
-			addSelectedClass(newYPlaneId);
+			var { planeid, planesymbol } = handleSelectStart();
+			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: 1, y: 0 });
+			selection = ['D'];
+			handleSelectEnd(newXPlaneId, planesymbol);
 		} else if (event.key === "d" || event.key === "ArrowRight") {
 			event.preventDefault(); // Prevent scrolling
 
-			moveDescript = "MoveRight";
-			var selectedIds = getSelectedCellIds(); // getSelectedCellIds() 함수를 호출하여 선택된 셀의 ID를 가져옴
-			var symbols = getSymbolClassesFromCellIds(selectedIds);
-			var coordinates = convertCellIdsToCoordinates(selectedIds);
-			var size = calculateRectangleSize(coordinates);
-			var planesymbol = saveInRectangle(symbols, size.width, size.height);
-			var planeid = saveInRectangle(selectedIds, size.width, size.height);
-			removeSelectedClass();
-
-			// Moving up reduces the y-coordinate by 1
-			var newYPlaneId = planeid.map(function (row) {
-				return row.map(function (cell) {
-					var [_, x, y] = cell.split(/[-_]/);
-					console.log(x, y);
-					return `cell_${x}-${parseInt(y) + 1}`;
-				});
-			});
-
-			// Check if the new location is valid
-			var isValid = newYPlaneId.every(function (row) {
-				return row.every(function (cell) {
-					return $(`#${cell}`).length === 1;
-				});
-			});
-
-			if (!isValid) {
-				// If the new location is not valid, reselect the original cells and return
-				addSelectedClass(planeid);
-				return;
-			}
-			planeid.forEach(function (row) {
-				row.forEach(function (cell) {
-					var oldCell = $(`#${cell}`);
-					var symbolClass = oldCell.attr("class").match(/symbol_[0-9]/)[0];
-					oldCell.removeClass(symbolClass).addClass("symbol_0"); // Assuming "symbol_0" is the class for black
-				});
-			});
-
-			console.log("-- Action: Move right\n---- Changed:", newYPlaneId);
-			updateCellClasses(newYPlaneId, planesymbol);
-			addSelectedClass(newYPlaneId);
+			var { planeid, planesymbol } = handleSelectStart();
+			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: 0, y: 1 });
+			selection = ['R'];
+			handleSelectEnd(newXPlaneId, planesymbol);
 		}
+	});
+	// Undo & Redo Button Event Handlers
+    $('#undo_button').on('click', function() {
+		handleUndoAction();
+	});
+	
+	$('#redo_button').on('click', function() {
+	    handleRedoAction();
 	});
 
 	cell_observer();
 });
+
+// Make a deep copy of the current grid
+function copyGrid() {
+
+	var allCellIds = [];
+	var allSymbols = [];
+	// Store all the cell classes in a 1D array
+	$('#test_output_grid .cell_final').each(function() {
+	  var cellId = $(this).attr('id');
+	  if(cellId){
+		allCellIds.push(cellId);
+	  }
+	}); 
+  
+	// Store all the symbols in a 1D array
+	allSymbols = getSymbolClassesFromCellIds(allCellIds);
+	
+	return {allCellIds, allSymbols};
+}
+  
+  // Record grid state changes
+function recordGridchange() {
+	// Clear the undoHistory stack whenever a new change is made
+    $('#undo_button').prop('disabled',false);
+    $('#redo_button').prop('disabled',true);
+	undoHistory = [];
+	// Push the grid state to the history stack
+	historyStack.push(copyGrid());
+}
+  
+function resetHistoryStack(){
+	historyStack = [];
+	undoHistory = [];
+	// Initial grid push
+	recordGridchange();
+	$('#undo_button').prop('disabled',true);
+
+}
+  // Event Handlers for Undo & Redo Button
+function handleUndoAction() {
+
+	if (historyStack.length > 1) {
+		// Push the current grid state to the undoHistory stack before reverting
+		undoHistory.push(copyGrid());
+		// Pop the latest grid state from the history stack
+		historyStack.pop();
+        let stackTop = historyStack[historyStack.length-1];
+		console.log("-- Action: Undo\n---- Changed:", stackTop.allSymbols);
+	
+		// Revert the grid to its old state
+        let coordinates = convertCellIdsToCoordinates(stackTop.allCellIds);
+        let size = calculateRectangleSize(coordinates);
+        let planesymbol = saveInRectangle(stackTop.allSymbols, size.width, size.height);
+        let planeid = saveInRectangle(stackTop.allCellIds, size.width, size.height);
+        moveDescript = 'Undo';
+		updateCellClasses(planeid, planesymbol);
+        // Enable the Redo button after an undo
+        $('#redo_button').prop('disabled', false);
+	}
+  
+	// Disable the Undo button if there is no more history
+	if (historyStack.length === 1) {
+		$('#undo_button').prop('disabled', true);
+    } 
+    
+}
+  
+  
+function handleRedoAction() {
+    console.log('hi')
+	if (undoHistory.length > 0) {
+        // Push the current grid state to the history stack before reapplying
+        historyStack.push(undoHistory.pop());
+        
+        // Pop the latest undone grid state from the undoHistory stack
+        var stackTop = historyStack[historyStack.length-1];
+    
+        console.log("-- Action: Redo\n---- Changed:", stackTop.allSymbols);
+        // Reapply the state to the grid
+        let coordinates = convertCellIdsToCoordinates(stackTop.allCellIds);
+        let size = calculateRectangleSize(coordinates);
+        let planesymbol = saveInRectangle(stackTop.allSymbols, size.width, size.height);
+        let planeid = saveInRectangle(stackTop.allCellIds, size.width, size.height);
+        moveDescript = 'Redo';
+		updateCellClasses(planeid, planesymbol);
+        // Enable the Undo button after a redo
+	    $('#undo_button').prop('disabled', false);
+	}
+	// Disable the Redo button if there is no more undo history
+	if (undoHistory.length === 0) {
+	    $('#redo_button').prop('disabled', true);
+	}
+	
+  }
+  
 
 function pushToTargetArray(array2D, text1, text2, sel, targetArray) {
 	console.log(`-------- Data Pushed, ${text1}, ${text2}, ${sel} --------`);
@@ -459,9 +487,8 @@ function cell_observer(cells, observer) {
 		var labelText = selectedLabel.textContent;
 
 		// Log the selected label text
-		var inputValue = $("#output_grid_size").val();
-		var rows = parseInt(inputValue.split("x")[0]);
-		var cols = parseInt(inputValue.split("x")[1]);
+		var rows = parseInt($("#output_grid_height").val());
+		var cols = parseInt($("#output_grid_width").val());
 
 		mutations.forEach(function (mutation) {
 			if (mutation.attributeName === "class") {
@@ -608,6 +635,7 @@ function enableEditable() {
 		$(this)
 			.removeClass(currentClasses[1])
 			.addClass("symbol_" + selectedPreview.attr("symbol"));
+        recordGridchange();
 	});
 }
 
@@ -624,11 +652,23 @@ function enableSelectable() {
 		autoRefresh: false,
 		filter: "> .row > .cell_final",
 		start: function (event, ui) {
-			$(".ui-selected").each(function (i, e) {
+			$(".ui-selected").addClass("ui-selected", function (i, e) {
 				$(e).removeClass("ui-selected");
 			});
 		},
-	}); // get selectable
+		stop: function (event, ui) {
+			$(".ui-selected").each(function (i, e) {
+				originalSelectedCellIds = $(".cell_final")
+					.filter(function () {
+						return $(e).attr("id").startsWith("cell");
+					})
+					.map(function () {
+						return { id: this.id, class: this.className };
+					})
+					.get();
+			});
+		},
+	});
 	$("#symbol_picker")
 		.find(".symbol_preview")
 		.on("click", function (event) {
@@ -688,7 +728,7 @@ function enableFloodFill() {
 			)}`
 		);
 		dfsFloodFill(x,y,selectedPreview.attr('symbol'));
-
+        recordGridchange();
 	});
 }
 
@@ -702,6 +742,7 @@ function pickSymbol() {
 	symbol_preview.addClass("selected-symbol-preview");
 }
 
+// Change the class of the selected cells to the clicked symbol
 function fillSelected() {
 	var selectedPreview = $("#symbol_picker").find(".selected-symbol-preview");
 	// remove old color and add new color
@@ -726,6 +767,7 @@ function fillSelected() {
 	});
 	if (maxx === -1) return;
 	moveDescript = "Fill";
+    recordGridchange();
 	selection = [[minx,miny],[maxx,maxy]];
 	console.log(
 		`-- Action: Fill\n---- Where: (${minx},${miny}) ~ (${maxx},${maxy})\n---- Color: ${color}`
@@ -843,10 +885,8 @@ $("#resetBtn").on("click", function () {
 
 function resizeOutputGrid() {
 	// Get the input value
-	var inputValue = $("#output_grid_size").val();
-
-	var rows = parseInt(inputValue.split("x")[0]);
-	var cols = parseInt(inputValue.split("x")[1]);
+	var rows = parseInt($("#output_grid_height").val());
+	var cols = parseInt($("#output_grid_width").val());
 	const numbersArray = createArray(rows, cols);
 	array = createArray(rows, cols);
 
@@ -884,7 +924,7 @@ function resizeOutputGrid() {
 	moveDescript = "";
 	selection = [];
 	enableSelectable();
-
+	resetHistoryStack();
 	cell_observer();
 }
 
@@ -899,7 +939,8 @@ function copyFromInput() {
 		n = cols;
 		$("#test_output_grid").css("width", fullGridSize);
 	}
-	$("#output_grid_size").val(rows + "x" + cols);
+	$("#output_grid_height").val(rows);
+    $("#output_grid_width").val( cols);
 	$("#test_output_grid").data("height", rows);
 	$("#test_output_grid").data("width", cols);
 	var userInteractDiv = document.getElementById("test_output_grid");
@@ -936,6 +977,7 @@ function copyFromInput() {
 	);
 	moveDescript = "";
 	selection = [];
+	resetHistoryStack();
 	cell_observer();
 }
 
@@ -1018,6 +1060,7 @@ function submitSolution(input, name, cRoute) {
 		sendLogData(final);
 		final = [];
 		COPIED_ARRAY = [];
+        historyStack = [];
 		alert("Success!");
 		if (CURRENT_SUBPROBLEM+1 < TOTAL_SUBPROBLEMS){
 			window.location.href = "/task/" + name + "/" + (incrementedValue-1) +"?subp="+(CURRENT_SUBPROBLEM+1);
@@ -1030,6 +1073,7 @@ function submitSolution(input, name, cRoute) {
 		final = []; // Do not remove!!!
 		copyFromInput();
 		final = [];
+        resetHistoryStack();
 		COPIED_ARRAY = [];
 	}
 }
@@ -1121,9 +1165,10 @@ function calculateRectangleSize(coordinates) {
 	var height = maxY - minY + 1;
 	var width = maxX - minX + 1;
 
-	return { height, width };
+	return { height, width, minX,minY,maxX,maxY };
 }
 
+// Function to save the selected cells or symbols in a rectangle
 function saveInRectangle(symbols, numRows, numColumns) {
 	var output = [];
 	var index = 0;
@@ -1198,6 +1243,7 @@ function rotateArrayCounterClockwise(arr) {
 	return rotatedArr;
 }
 
+/*
 function updateCellSymbols(planeid, symbols) {
 	var cells = planeid.flat();
 
@@ -1219,6 +1265,7 @@ function updateCellSymbols(planeid, symbols) {
 		$("#" + cellId).addClass(symbol);
 	}
 }
+*/
 
 function updateCellClasses(cellIdsArray, symbolsArray) {
 	// Iterate over the cellIdsArray and symbolsArray
