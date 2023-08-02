@@ -39,87 +39,103 @@ $(function () {
 			
 		}
 		// select cell stored
-
-		// originalSelectedCellIds = $("#test_output_grid")
-		// 	.map(function () {
-		// 		return { id: this.id, class: this.className };
-		// 	})
-		// 	.get();
-		// console.log("cell state : ", originalSelectedCellIds);
-		/*
-		var selectedIds = getSelectedCellIds();
-		selectedIdsBeforeMove = selectedIds;
-		var symbols = getSymbolClassesFromCellIds(selectedIds);
-		var coordinates = convertCellIdsToCoordinates(selectedIds);
-		var size = calculateRectangleSize(coordinates);
-		var planesymbol = saveInRectangle(symbols, size.width, size.height);
-		var planeid = saveInRectangle(selectedIds, size.width, size.height);
-		removeSelectedClass();
-		return { planeid, planesymbol };*/
 	}
 
 	function handleCellMove(operation) {
 		// move cell operation
-		/*
-		var newXPlaneId = planeid.map(function (row) {
-			return row.map(function (cell) {
-				var [_, x, y] = cell.split(/[-_]/);
-				return `cell_${parseInt(x) + operation.x}-${parseInt(y) + operation.y}`;
-			});
-		});
-
-		var isValid = newXPlaneId.every(function (row) {
-			return row.every(function (cell) {
-				return $(`#${cell}`).length === 1;
-			});
-		});
-
-		if (!isValid) {
-			addSelectedClass(planeid);
-			return null;
-		}
-
-		planeid.forEach(function (row) {
-			row.forEach(function (cell) {
-				var oldCell = $(`#${cell}`);
-				var symbolClass = oldCell.attr("class").match(/symbol_[0-9]/)[0];
-				oldCell.removeClass(symbolClass).addClass("symbol_0"); // Assuming "symbol_0" is the class for black
-			});
-		});
-		return newXPlaneId;*/
-		
 		MOVEBACKUP_SEL= MOVEBACKUP_SEL.map((v,i) => {
 			return {x: v.x+operation.x, y: v.y+operation.y, symbol:v.symbol};
 		});
+		MOVEBACKUP_DIM.minX += operation.x;
+		MOVEBACKUP_DIM.maxX += operation.x;
+		MOVEBACKUP_DIM.minY += operation.y;
+		MOVEBACKUP_DIM.maxY += operation.y;
+
+	}
+
+	function handleCellRotate(ccw=false){
+		let sigma = ccw? +1 : -1;
+		console.log(MOVEBACKUP_DIM)
+		let cX = (MOVEBACKUP_DIM.maxX+MOVEBACKUP_DIM.minX)*0.5; //centervalue
+		let cY = (MOVEBACKUP_DIM.maxY+MOVEBACKUP_DIM.minY)*0.5;
+		let newminX,newmaxX,newminY,newmaxY;
+		if(MOVEBACKUP_DIM.height % 2 == MOVEBACKUP_DIM.width %2 ){ //smoothly rotatable
+			MOVEBACKUP_SEL= MOVEBACKUP_SEL.map((v,i) => {
+				let newX = Math.round(cX + sigma * (cY - v.y));
+				let newY = Math.round(cY - sigma * (cX - v.x));
+				return {x: newX, y: newY, symbol:v.symbol};
+			});
+			newminX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.minY));
+			newmaxX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.maxY));
+			newminY = Math.round(cY - sigma * (cX - MOVEBACKUP_DIM.minX));
+			newmaxY = Math.round(cY - sigma * (cX - MOVEBACKUP_DIM.maxX));
+
+		} else {
+			if(MOVEBACKUP_DIM.rot === undefined) { MOVEBACKUP_DIM.rot = 0};
+			MOVEBACKUP_DIM.rot+=1;
+			let modifier = MOVEBACKUP_DIM.rot%2;
+			MOVEBACKUP_SEL= MOVEBACKUP_SEL.map((v,i) => {
+				let newX = Math.round(cX + sigma * (cY - v.y))-modifier;
+				let newY = Math.round(cY - sigma * (cX - v.x))-modifier;
+				return {x: newX, y: newY, symbol:v.symbol};
+			});
+			newminX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.minY))-modifier;
+			newmaxX = Math.round(cX + sigma * (cY - MOVEBACKUP_DIM.maxY))-modifier;
+			newminY = Math.round(cY - sigma * (cX - MOVEBACKUP_DIM.minX))-modifier;
+			newmaxY = Math.round(cY - sigma * (cX - MOVEBACKUP_DIM.maxX))-modifier;
+		} 
+		
+		MOVEBACKUP_DIM.minY = Math.min(newminY,newmaxY);
+		MOVEBACKUP_DIM.maxY = Math.max(newminY,newmaxY);
+		MOVEBACKUP_DIM.minX = Math.min(newminX,newmaxX);
+		MOVEBACKUP_DIM.maxX = Math.max(newminX,newmaxX);
+		MOVEBACKUP_DIM.width, MOVEBACKUP_DIM.height = MOVEBACKUP_DIM.height, MOVEBACKUP_DIM.width;
+	}
+	
+	function handleCellFlip(axis='x'){
+		let cX2 = (MOVEBACKUP_DIM.maxX+MOVEBACKUP_DIM.minX); //centervalue * 2
+		let cY2 = (MOVEBACKUP_DIM.maxY+MOVEBACKUP_DIM.minY);
+		if(axis == 'x'){
+			MOVEBACKUP_SEL= MOVEBACKUP_SEL.map((v,i) => {
+				let newX = cX2-v.x;
+				let newY = v.y
+				return {x: newX, y: newY, symbol:v.symbol};
+			});
+		} else if(axis =='y'){
+			MOVEBACKUP_SEL= MOVEBACKUP_SEL.map((v,i) => {
+				let newX = v.x;
+				let newY = cY2-v.y
+				return {x: newX, y: newY, symbol:v.symbol};
+			});
+		}
 	}
 
 	function handleSelectEnd() {
 		// select cell end
-		/*
-		if (newXPlaneId !== null) {
-			moveDescript = 'Move'
-			updateCellClasses(newXPlaneId, planesymbol);
-			addSelectedClass(newXPlaneId);
-			
-			recordGridchange();
-		} else {
-			selection = [];
-		}
-		*/
-		moveDescript = 'Move'
+
 		$('#test_output_grid .cell_final').each((i,e)=>{$(e).removeClass('ui-selected')});
-		MOVEBACKUP_BG.forEach((v,i)=>{
-			let symbolClass = $(`#cell_${v.x}-${v.y}`).attr("class").match(/symbol_[0-9]/)[0];
-			$(`#cell_${v.x}-${v.y}`).removeClass(symbolClass).addClass('symbol_'+v.symbol);
-		});
-		MOVEBACKUP_SEL.forEach((v,i)=>{
+		let unionresult = {};
+
+		MOVEBACKUP_BG.forEach((v,i) => {
+			unionresult[`${v.x}-${v.y}`] = v.symbol;
+		})
+		MOVEBACKUP_SEL.forEach((v,i) => {
+			unionresult[`${v.x}-${v.y}`] = v.symbol;
+
 			let jqCell = $(`#cell_${v.x}-${v.y}`);
+			if(jqCell.length)
+				jqCell.addClass('ui-selected');
+		})
+
+		for ( const [k,v] of Object.entries(unionresult)){
+			let jqCell = $(`#cell_${k}`);
 			if(jqCell.length){
 				let symbolClass = jqCell.attr("class").match(/symbol_[0-9]/)[0];
-				jqCell.removeClass(symbolClass).addClass('symbol_'+v.symbol).addClass('ui-selected');
+				if(symbolClass != 'symbol_'+v)
+					jqCell.removeClass(symbolClass).addClass('symbol_'+v);
 			}
-			
-		});
+		}
+
 		if(MOVEBACKUP_SEL.length>0){
 			recordGridchange();
 		}
@@ -155,86 +171,45 @@ $(function () {
 		var buttonName = $(this).attr("id"); // Read Button name
 
 		var selectedIds = getSelectedCellIds(); // Retrieve Selected Cell Ids
-		var symbols = getSymbolClassesFromCellIds(selectedIds); // Retrieve Selected Cells' Colors
 		var coordinates = convertCellIdsToCoordinates(selectedIds); // Convert Cell ids' to Coords
+		var size = calculateRectangleSize(coordinates);
+		selection = [[size.minX,size.minY],[size.maxX,size.maxY]];
 		var rectangular = isRectangular(coordinates); // Verify the selection area is square-shaped
 		
-		var minx = 1000, maxx=-1, miny=1000,maxy=-1;
-		for(var i=0 ; i<coordinates.length ; i++){
-			minx=Math.min(minx,coordinates[i][0]);
-			miny=Math.min(miny,coordinates[i][1]);
-			maxx=Math.max(maxx,coordinates[i][0]);
-			maxy=Math.max(maxy,coordinates[i][1]);
-		}
-		
-		
-		if (rectangular) {
-			var size = calculateRectangleSize(coordinates);
-			var planesymbol = saveInRectangle(symbols, size.width, size.height);
-			var planeid = saveInRectangle(selectedIds, size.width, size.height);
-			selection = [[size.minX,size.minY],[size.maxX,size.maxY]];
-			if (wasMoveRotFlip === false){
-				wasMoveRotFlip = true;
-				// Backup Here
-				separateSelection();
-			}
+		if (true) {
 			
+			handleSelectStart();
 
 			if (buttonName == 'xflip') {
+
 				moveDescript = 'FlipX';
-				var changed_symbol = flipArrayX(planesymbol)
-				console.log("-- Action: X Flip\n---- Changed:", changed_symbol);
-				updateCellClasses(planeid, changed_symbol)
-				recordGridchange();
+				handleCellFlip(axis='x');
+				handleSelectEnd();
+				console.log(`-- Action: X Flip\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`);
+
 			}
 			if (buttonName == 'yflip') {
+
 				moveDescript = 'FlipY';
-				var changed_symbol = flipArrayY(planesymbol)
-				console.log("-- Action: Y Flip\n---- Changed:", changed_symbol);
-				updateCellClasses(planeid, changed_symbol)
-				recordGridchange();
+				handleCellFlip(axis='y');
+				handleSelectEnd();
+				console.log(`-- Action: Y Flip\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`);
 			}
 			if (buttonName == "clockrotate") {
+
 				moveDescript = "RotateCW";
-
-				size = calculateRectangleSize(coordinates);
-				planesymbol = saveInRectangle(symbols, size.width, size.height);
-				planeid = saveInRectangle(selectedIds, size.width, size.height);
-				removeSelectedClass();
-				var changed_symbol = rotateArrayClockwise(planesymbol);
-				console.log("-- Action: CW Rotate\n---- Changed:", changed_symbol);
-				if (size.width != size.height){
-					var black_symbol = createRectangle(size.height, size.width);
-					//console.log("black: ", black_symbol)
-					updateCellClasses(planeid, black_symbol);
-				}
-
-				var changed_id = rotateRectangle(planeid);
-
-				addSelectedClass(changed_id);
-				updateCellClasses(changed_id, changed_symbol);
-				recordGridchange();
+				handleCellRotate(ccw=false);
+				handleSelectEnd();
+				console.log(`-- Action: CW Rotate\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`);
+				
 			}
 			if (buttonName == "counterclockrotate") {
+
 				moveDescript = "RotateCCW";
-
-				size = calculateRectangleSize(coordinates);
-				planesymbol = saveInRectangle(symbols, size.width, size.height);
-				planeid = saveInRectangle(selectedIds, size.width, size.height);
-				removeSelectedClass();
-				var changed_symbol = rotateArrayCounterClockwise(planesymbol);
-				console.log("-- Action: CCW Rotate\n---- Changed:", changed_symbol);
-				if (size.width != size.height){
-					var black_symbol = createRectangle(size.height, size.width);
-					//console.log("black: ", black_symbol)
-					updateCellClasses(planeid, black_symbol);
-				}
-
-				var changed_id = rotateRectangle(planeid);
-
-				addSelectedClass(changed_id);
-				updateCellClasses(changed_id, changed_symbol);
-				recordGridchange();
+				handleCellRotate(ccw=true);
+				handleSelectEnd();
+				console.log(`-- Action: CCW Rotate\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`);
+			
 			}
 		}
 	});
@@ -357,36 +332,50 @@ $(function () {
 		} else if (event.ctrlKey && event.key === "y") {
 			wasMoveRotFlip = false;
             handleRedoAction();
-		} else if (event.key === "w" || event.key === "ArrowUp") {
+		} else if(['w','a','s','d','ArrowUP','ArrowLeft','ArrowDown','ArrowRight', 'ArrowUp'].includes(event.key)){
 			//Key Move Event//
 			event.preventDefault(); // Prevent scrolling
+			moveDescript = 'Move';
+			var selectedIds = getSelectedCellIds(); // Retrieve Selected Cell Ids
+			var coordinates = convertCellIdsToCoordinates(selectedIds); // Convert Cell ids' to Coords
+			var size = calculateRectangleSize(coordinates);
+			selection = [[size.minX,size.minY],[size.maxX,size.maxY]];
 
-			handleSelectStart();
-			handleCellMove({ x: -1, y: 0 });
-			selection = ['U'];
-			handleSelectEnd();
-		} else if (event.key === "a" || event.key === "ArrowLeft") {
-			event.preventDefault(); // Prevent scrolling
+			if (event.key === "w" || event.key === "ArrowUp") {
 
-			handleSelectStart();
-			handleCellMove({ x: 0, y: -1 });
-			selection = ['L'];
-			handleSelectEnd();
-		} else if (event.key === "s" || event.key === "ArrowDown") {
-			event.preventDefault(); // Prevent scrolling
+				handleSelectStart();
+				handleCellMove({ x: -1, y: 0 });
+				selection = [...selection , 'U'];
+				console.log(`-- Action: Move\n---- Direction: Up\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`)
+				handleSelectEnd();
 
-			handleSelectStart();
-			handleCellMove({ x: 1, y: 0 });
-			selection = ['D'];
-			handleSelectEnd();
-		} else if (event.key === "d" || event.key === "ArrowRight") {
-			event.preventDefault(); // Prevent scrolling
+			} else if (event.key === "a" || event.key === "ArrowLeft") {
 
-			handleSelectStart();
-			handleCellMove({ x: 0, y: 1 });
-			selection = ['R'];
-			handleSelectEnd();
+				handleSelectStart();
+				handleCellMove({ x: 0, y: -1 });
+				selection = [...selection , 'L'];
+				console.log(`-- Action: Move\n---- Direction: Left\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`)
+				handleSelectEnd();
+
+			} else if (event.key === "s" || event.key === "ArrowDown") {
+
+				handleSelectStart();
+				handleCellMove({ x: 1, y: 0 });
+				selection = [...selection , 'D'];
+				console.log(`-- Action: Move\n---- Direction: Down\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`)
+				handleSelectEnd();
+
+			} else if (event.key === "d" || event.key === "ArrowRight") {
+				
+				handleSelectStart();
+				handleCellMove({ x: 0, y: 1 });
+				selection = [...selection , 'R'];
+				console.log(`-- Action: Move\n---- Direction: Right\n---- Changed: (${size.minX},${size.minY}) ~ (${size.maxX},${size.maxY})`)
+				handleSelectEnd();
+
+			}
 		}
+		
 	});
 	// Undo & Redo Button Event Handlers
     $('#undo_button').on('click', function() {
@@ -409,6 +398,7 @@ function separateSelection(){
 	let maxY = -Infinity;
 	MOVEBACKUP_BG=[];
 	MOVEBACKUP_SEL=[];
+	MOVEBACKUP_DIM=[];
 	$('#test_output_grid .cell_final').each( (i,e)=>{
 		// color
 		let sym = parseInt($(e).attr('class').match(/symbol_([0-9])/)[1]);
@@ -422,20 +412,21 @@ function separateSelection(){
 
 		if(isSelected){
 			// if selected and Not zero, push
-			minX = Math.min(minX,x);
-			minY = Math.min(minY,y);
-			maxX = Math.max(maxX,x);
-			maxY = Math.max(maxY,y);
 			
 			if(sym != 0){
 				MOVEBACKUP_SEL.push({x,y,symbol:sym });
+				minX = Math.min(minX,x);
+				minY = Math.min(minY,y);
+				maxX = Math.max(maxX,x);
+				maxY = Math.max(maxY,y);
 			}
 			MOVEBACKUP_BG.push({x,y,symbol:0 });
 		} else {
 			MOVEBACKUP_BG.push({x,y,symbol:sym });
 		}
 	});
-	MOVEBACKUP_DIM = {height:maxX-minX+1, width: maxY-minY+1, minX,maxX,minY,maxY};
+	if(minX!= Infinity)
+		MOVEBACKUP_DIM = {height:maxX-minX+1, width: maxY-minY+1, minX,maxX,minY,maxY};
 }
 
 // Make a deep copy of the current grid
@@ -713,9 +704,9 @@ function enableEditable() {
 				"symbol"
 			)}`
 		);
-		var currentClasses = $(this).attr("class").split(" ");
+		var currentClasses = $(this).attr("class").match(/symbol_[0-9]/)[0];
 		$(this)
-			.removeClass(currentClasses[1])
+			.removeClass(currentClasses)
 			.addClass("symbol_" + selectedPreview.attr("symbol"));
         recordGridchange();
 	});
