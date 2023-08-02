@@ -860,6 +860,7 @@ function disableEditable() {
 
 function disableSelectable() {
 	try {
+		removeSelectedClass()
 		$(".user_interact").selectable("destroy");
 	} catch (e) {}
 }
