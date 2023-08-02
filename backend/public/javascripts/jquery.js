@@ -1,5 +1,7 @@
 var COPIED_ARRAY = [];
-var originalSelectedCellIds = [];
+var MOVEBACKUP_BG = [];
+var MOVEBACKUP_SEL = [];
+var MOVEBACKUP_DIM = {};
 
 const miniGridSize = 200;
 const fullGridSize = 400;
@@ -17,6 +19,8 @@ var TOTAL_SUBPROBLEMS;
 var CURRENT_SUBPROBLEM;
 
 var selection = [];
+var wasMoveRotFlip = false;
+
 $(function () {
 	final = []
 	selection = []
@@ -28,6 +32,12 @@ $(function () {
 	let previousGridState = {};
 
 	function handleSelectStart() {
+		if (wasMoveRotFlip === false){
+			wasMoveRotFlip = true;
+			// Backup Here
+			separateSelection();
+			
+		}
 		// select cell stored
 
 		// originalSelectedCellIds = $("#test_output_grid")
@@ -36,7 +46,7 @@ $(function () {
 		// 	})
 		// 	.get();
 		// console.log("cell state : ", originalSelectedCellIds);
-
+		/*
 		var selectedIds = getSelectedCellIds();
 		selectedIdsBeforeMove = selectedIds;
 		var symbols = getSymbolClassesFromCellIds(selectedIds);
@@ -45,11 +55,12 @@ $(function () {
 		var planesymbol = saveInRectangle(symbols, size.width, size.height);
 		var planeid = saveInRectangle(selectedIds, size.width, size.height);
 		removeSelectedClass();
-		return { planeid, planesymbol };
+		return { planeid, planesymbol };*/
 	}
 
-	function handleCellMove(planeid, planesymbol, operation) {
+	function handleCellMove(operation) {
 		// move cell operation
+		/*
 		var newXPlaneId = planeid.map(function (row) {
 			return row.map(function (cell) {
 				var [_, x, y] = cell.split(/[-_]/);
@@ -75,11 +86,16 @@ $(function () {
 				oldCell.removeClass(symbolClass).addClass("symbol_0"); // Assuming "symbol_0" is the class for black
 			});
 		});
-		return newXPlaneId;
+		return newXPlaneId;*/
+		
+		MOVEBACKUP_SEL= MOVEBACKUP_SEL.map((v,i) => {
+			return {x: v.x+operation.x, y: v.y+operation.y, symbol:v.symbol};
+		});
 	}
 
-	function handleSelectEnd(newXPlaneId, planesymbol) {
+	function handleSelectEnd() {
 		// select cell end
+		/*
 		if (newXPlaneId !== null) {
 			moveDescript = 'Move'
 			updateCellClasses(newXPlaneId, planesymbol);
@@ -88,6 +104,24 @@ $(function () {
 			recordGridchange();
 		} else {
 			selection = [];
+		}
+		*/
+		moveDescript = 'Move'
+		$('#test_output_grid .cell_final').each((i,e)=>{$(e).removeClass('ui-selected')});
+		MOVEBACKUP_BG.forEach((v,i)=>{
+			let symbolClass = $(`#cell_${v.x}-${v.y}`).attr("class").match(/symbol_[0-9]/)[0];
+			$(`#cell_${v.x}-${v.y}`).removeClass(symbolClass).addClass('symbol_'+v.symbol);
+		});
+		MOVEBACKUP_SEL.forEach((v,i)=>{
+			let jqCell = $(`#cell_${v.x}-${v.y}`);
+			if(jqCell.length){
+				let symbolClass = jqCell.attr("class").match(/symbol_[0-9]/)[0];
+				jqCell.removeClass(symbolClass).addClass('symbol_'+v.symbol).addClass('ui-selected');
+			}
+			
+		});
+		if(MOVEBACKUP_SEL.length>0){
+			recordGridchange();
 		}
 	}
 
@@ -132,12 +166,19 @@ $(function () {
 			maxx=Math.max(maxx,coordinates[i][0]);
 			maxy=Math.max(maxy,coordinates[i][1]);
 		}
-		selection = [[minx,miny],[maxx,maxy]];
+		
 		
 		if (rectangular) {
 			var size = calculateRectangleSize(coordinates);
 			var planesymbol = saveInRectangle(symbols, size.width, size.height);
 			var planeid = saveInRectangle(selectedIds, size.width, size.height);
+			selection = [[size.minX,size.minY],[size.maxX,size.maxY]];
+			if (wasMoveRotFlip === false){
+				wasMoveRotFlip = true;
+				// Backup Here
+				separateSelection();
+			}
+			
 
 			if (buttonName == 'xflip') {
 				moveDescript = 'FlipX';
@@ -297,6 +338,7 @@ $(function () {
 					}
 				}
 				moveDescript = "Paste";
+				wasMoveRotFlip = false;
                 recordGridchange();
 				selection = [[pasteCellX,pasteCellY]]
 				console.log(
@@ -310,38 +352,40 @@ $(function () {
 				return;
 			}
 		} else if (event.ctrlKey && event.key === "z" && !event.shiftKey) {
+			wasMoveRotFlip = false;
             handleUndoAction();
 		} else if (event.ctrlKey && event.key === "y") {
+			wasMoveRotFlip = false;
             handleRedoAction();
 		} else if (event.key === "w" || event.key === "ArrowUp") {
 			//Key Move Event//
 			event.preventDefault(); // Prevent scrolling
 
-			var { planeid, planesymbol } = handleSelectStart();
-			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: -1, y: 0 });
+			handleSelectStart();
+			handleCellMove({ x: -1, y: 0 });
 			selection = ['U'];
-			handleSelectEnd(newXPlaneId, planesymbol);
+			handleSelectEnd();
 		} else if (event.key === "a" || event.key === "ArrowLeft") {
 			event.preventDefault(); // Prevent scrolling
 
-			var { planeid, planesymbol } = handleSelectStart();
-			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: 0, y: -1 });
+			handleSelectStart();
+			handleCellMove({ x: 0, y: -1 });
 			selection = ['L'];
-			handleSelectEnd(newXPlaneId, planesymbol);
+			handleSelectEnd();
 		} else if (event.key === "s" || event.key === "ArrowDown") {
 			event.preventDefault(); // Prevent scrolling
 
-			var { planeid, planesymbol } = handleSelectStart();
-			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: 1, y: 0 });
+			handleSelectStart();
+			handleCellMove({ x: 1, y: 0 });
 			selection = ['D'];
-			handleSelectEnd(newXPlaneId, planesymbol);
+			handleSelectEnd();
 		} else if (event.key === "d" || event.key === "ArrowRight") {
 			event.preventDefault(); // Prevent scrolling
 
-			var { planeid, planesymbol } = handleSelectStart();
-			var newXPlaneId = handleCellMove(planeid, planesymbol, { x: 0, y: 1 });
+			handleSelectStart();
+			handleCellMove({ x: 0, y: 1 });
 			selection = ['R'];
-			handleSelectEnd(newXPlaneId, planesymbol);
+			handleSelectEnd();
 		}
 	});
 	// Undo & Redo Button Event Handlers
@@ -355,6 +399,44 @@ $(function () {
 
 	cell_observer();
 });
+
+function separateSelection(){
+
+	//selection bbox
+	let minX = Infinity; 
+	let minY = Infinity;
+	let maxX = -Infinity;
+	let maxY = -Infinity;
+	MOVEBACKUP_BG=[];
+	MOVEBACKUP_SEL=[];
+	$('#test_output_grid .cell_final').each( (i,e)=>{
+		// color
+		let sym = parseInt($(e).attr('class').match(/symbol_([0-9])/)[1]);
+		
+		// coord
+		let [_,x,y] = $(e).attr('id').split(/[_-]/);
+		x = parseInt(x); y = parseInt(y);
+
+		// Selected?
+		let isSelected = $(e).attr('class').match('ui-selected') === null ? false : true;
+
+		if(isSelected){
+			// if selected and Not zero, push
+			minX = Math.min(minX,x);
+			minY = Math.min(minY,y);
+			maxX = Math.max(maxX,x);
+			maxY = Math.max(maxY,y);
+			
+			if(sym != 0){
+				MOVEBACKUP_SEL.push({x,y,symbol:sym });
+			}
+			MOVEBACKUP_BG.push({x,y,symbol:0 });
+		} else {
+			MOVEBACKUP_BG.push({x,y,symbol:sym });
+		}
+	});
+	MOVEBACKUP_DIM = {height:maxX-minX+1, width: maxY-minY+1, minX,maxX,minY,maxY};
+}
 
 // Make a deep copy of the current grid
 function copyGrid() {
@@ -641,6 +723,8 @@ function enableEditable() {
 
 function enableSelectable() {
 	disableSelectable();
+	wasMoveRotFlip = false; // Selectable -> initialize flag
+
 	var curmode = $("input[name=tool_switching]:checked").val();
 	if (curmode != "select") return;
 	$("#clockrotate").show();
@@ -652,21 +736,12 @@ function enableSelectable() {
 		autoRefresh: false,
 		filter: "> .row > .cell_final",
 		start: function (event, ui) {
-			$(".ui-selected").addClass("ui-selected", function (i, e) {
+			$(".ui-selected").each( function (i, e) {
 				$(e).removeClass("ui-selected");
 			});
 		},
 		stop: function (event, ui) {
-			$(".ui-selected").each(function (i, e) {
-				originalSelectedCellIds = $(".cell_final")
-					.filter(function () {
-						return $(e).attr("id").startsWith("cell");
-					})
-					.map(function () {
-						return { id: this.id, class: this.className };
-					})
-					.get();
-			});
+			wasMoveRotFlip = false;
 		},
 	});
 	$("#symbol_picker")
@@ -767,6 +842,8 @@ function fillSelected() {
 	});
 	if (maxx === -1) return;
 	moveDescript = "Fill";
+	wasMoveRotFlip = false;
+
     recordGridchange();
 	selection = [[minx,miny],[maxx,maxy]];
 	console.log(
@@ -867,14 +944,15 @@ function resetOutputGrid() {
 	const rownum = rows.length;
 	const colnum = divs.length / rows.length;
 
-	var array = [];
-	array = createArray(rownum, colnum);
+	//var array = [];
+	//array = createArray(rownum, colnum);
 	console.log(`-- Action: Reset Grid`);
 
 	enableSelectable();
 	labelText = "Critical";
 	moveDescript = "ResetGrid";
 	selection = [[rownum,colnum]];
+	recordGridchange();
 	// final = pushToTargetArray(array, labelText, moveDescript, final)
 }
 
