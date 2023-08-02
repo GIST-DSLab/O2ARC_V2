@@ -42,7 +42,7 @@
     <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
 
     <script>
-        var testgrid = <%- data["action_sequence"] %> ; /* eval router에서 값을 전달해야 함.문제 */
+        var userSubmissions = <%- [JSON.stringify(data[data.length-1])]; %>;
         var currentRoute = window.location.href;
     </script>
 
@@ -55,7 +55,7 @@
 
     <script src="/javascripts/jquery.js"></script>
     <script src="/javascripts/eval.js"></script>
-
+    <script src="/javascripts/testing_interface.js"></script>
     
   </head>
 
@@ -74,7 +74,7 @@
             <label id='current_task_desc' for="random_task_btn"> </label>
             </div>
             <br/>
-            <br />
+            <br/>
             <br/>
             <div class="logpair">
                 <div class="loggrid" id="input_grid"></div>
@@ -84,6 +84,34 @@
             <div class = "overview" id= "overview"><a id = "active" >OVERVIEW</a></div>
 
         </p>
+        </div>
+        <div class="card card_2 col-lg-2" style="height: auto; width:auto; padding: 20px;">
+            <% var grid = JSON.parse(data[data.length-6].action_sequence).trace[4][3] ; var height = grid.length; var width = grid[0].length;%>
+            <div class="container-fluid row demo_row mx-auto">
+                <div class="col">
+                <% for(i = 0; i < height ; i++){ %>
+                    <% if(i == 0){ %>
+                    <div id="test_input_grid" class="user_interact container output_preview">
+                    <% } %>
+                    <% if(height > width) {n=height} else{n=width} %>
+                    <% cs = 399/n %>
+                    <% // console.log(cs)%>
+
+                    <div class="row justify-content-center">
+                    <% for(j = 0; j < width; j++){ %>
+                    <div class="cell_final symbol_<%= grid[i][j] %>" id="inputcell_<%= i %>-<%= j %>" style="width: <%= cs %>px; height: <%= cs %>px;">  </div>
+
+                    <% } %>
+                    </div>
+                    <% if(i == height - 1){ %>
+                    </div>
+                    <% } %>
+
+                    
+                <% } %>
+                </div>
+                
+            </div>
         </div>
         <div id="visualization">
             <div class = "overview_page" id ='overview_page' hidden = "false">
@@ -108,8 +136,6 @@
         <div id="evaluation">
             <div class="evaluation_text">
                 <h3>Evaluate the trace</h3>
-
-                <%= JSON.stringify(data, null, 2) %> <!--데이터 찍어봄 -->
             </div>
             <div class = "survey" id = "points">
                 <div id = "good?1"> Is it a good solution? (1 ~ 5) :

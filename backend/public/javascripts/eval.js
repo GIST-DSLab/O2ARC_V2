@@ -1,5 +1,3 @@
-const testing_function = require("/javascripts/testing_interface.js");
-
 var EDITION_GRID_HEIGHT = 300;
 var EDITION_GRID_WIDTH = 300;
 var MAX_CELL_SIZE = 100;
