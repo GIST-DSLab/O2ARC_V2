@@ -14,6 +14,8 @@ var dataRouter = require('./routes/data')
 var arcRouter = require('./routes/arc_competition')
 var miniRouter = require('./routes/mini_competition')
 
+var evalRouter = require('./routes/eval')
+
 var app = express();
 
  
@@ -38,6 +40,7 @@ app.use('/data', dataRouter)
 app.use('/arc_competition', arcRouter)
 app.use('/mini_competition', miniRouter)
 
+app.use('/eval', evalRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

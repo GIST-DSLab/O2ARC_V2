@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" >
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Log Visualizer</title>
@@ -22,10 +22,12 @@
     rel="stylesheet"
     />
 
+    <!-- 여기 아래 부터 -->
+
     <style>
         :root {
-          --cell-size: <%= p %>px; /* set the initial value of the CSS variable */
-        }
+          --cell-size: <%= p %>px; 
+        } /* p값 문제 */
         .cell_final {
           /* height: var(--cell-size);
           width: var(--cell-size); */
@@ -36,31 +38,28 @@
           padding-left: 0px;
   
         }
-      </style>
-
-<link rel="stylesheet" href='/stylesheets/style.css'>
-
-
-</head>
-<body>
-     <!-- MDB -->
-    <script 
-    type="text/javascript"
-    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
-    ></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+    </style>
     <script>
-        var testgrid = <%- JSON.stringify(Testgrid) %> ;
+        var testgrid = <%- JSON.stringify(Testgrid) %> ; /* eval router에서 값을 전달해야 함.문제 */
         var currentRoute = window.location.href;
     </script>
-     
+
+
+    
+    <!-- 여기 까지 -->
+    <link rel="stylesheet" href='/stylesheets/style.css'>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
     <script src="/javascripts/jquery.js"></script>
 
-
+    
+</head>
+<body>
       <!--Main Navigation-->
     <header>
-        <!-- Navbar -->
+
         <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top ">
         <div class="container-fluid">
             
@@ -143,3 +142,4 @@
 </body>
 
 </html>
+
