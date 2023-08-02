@@ -956,6 +956,8 @@ function resizeOutputGrid() {
 	// Get the input value
 	var rows = parseInt($("#output_grid_height").val());
 	var cols = parseInt($("#output_grid_width").val());
+	if( !rows || !cols || rows>30 || cols > 30) return;
+
 	const numbersArray = createArray(rows, cols);
 	array = createArray(rows, cols);
 
