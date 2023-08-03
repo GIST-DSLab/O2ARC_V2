@@ -23,7 +23,7 @@ timer_end_arc = 0;
 
 function showSweetAlert() {
 	swal({
-	  title: "메인페이지로 돌아가겠습니까?",
+	  title: "Do you want to return to the main page?",
 	  icon: "warning",
 	  buttons: true,
 	  dangerMode: true,
@@ -407,7 +407,6 @@ function checkPasswordAndRedirect_mini(event, url) {
 /* 타이머 초기화 함수 */
 function initial_timer_mini(){
 if(!checkCookie("visited_mini")) {
-		alert("시작할때까지 잠시만 기다려주세요.");
 		document.cookie = 'visited_mini=true;';
 		timer_start_mini = Date.now();
 		document.cookie = `start_mini=${timer_start_mini}`;
@@ -587,7 +586,6 @@ function checkPasswordAndRedirect_arc(event, url) {
 
 function initial_timer_arc(){
 	if(!checkCookie("visited_arc")) {
-			alert("시작할때까지 잠시만 기다려주세요.");
 			document.cookie = 'visited_arc=true;';
 			timer_start_arc = Date.now();
 			document.cookie = `start_arc=${timer_start_arc}`;
