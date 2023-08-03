@@ -1125,7 +1125,7 @@ function submitSolution(input, name, cRoute) {
 	//console.log(cRoute)
 	var lastPart = cRoute.substring(cRoute.lastIndexOf("/") + 1);
 	var incrementedValue = parseInt(lastPart, 10) + 1;
-	const competition_stage = [6268,6303,6241,6247,6309,6271,6490,6299,6291,6410,6186,6227,5952,5971,5978,5983,6015,6018,6021,6022,6026,6033,6048,6055]
+	const competition_stage = [6097,6268,6303,6241,6247,6309,6271,6490,6299,6291,6410,6186,6227,5952,5971,5978,5983,6015,6018,6021,6022,6026,6033,6048,6055]
 	
 	
 	if (competition_stage.indexOf(incrementedValue)!=-1) { //Only for competition_stage part. For future work, we have to edit it as a random.
