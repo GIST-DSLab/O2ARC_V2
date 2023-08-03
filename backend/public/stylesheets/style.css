@@ -173,7 +173,7 @@ button:focus {outline:0;}
 }
 
 #toolbar-selection label {
-  max-width: 20%;
+  max-width: 8rem;
 }
 #undo-redo {
   width: 30%;

@@ -540,11 +540,11 @@ function superSecret_mini() {
 			timer_start_mini = Number(getCookieValue('start_mini'))
 			const diff = timer_end_mini - timer_start_mini;
 			const sec = Math.floor(diff / 1000);
-			alert(`Congraturation! ${sec}`);
+			alert(`Congraturation! Taken time: ${sec} sec`);
 			document.cookie = `end_mini=${sec}`;
 		} else{
 			sec = Number(getCookieValue('end_mini'))
-			alert(`Congraturation! ${sec}`);
+			alert(`Congraturation! Taken time: ${sec} sec`);
 		}
 		
 		// if (!confirm("Reset?")) {
@@ -794,7 +794,7 @@ function superSecret_arc() {
 				document.cookie = `end_arc=${sec}`;
 			}else{
 				sec = Number(getCookieValue('end_arc'))
-				alert(`Congraturation! ${sec}`);
+				alert(`Congraturation! Taken time: ${sec} sec`);
 			}
 		/*
 		if (!confirm("Reset?")) {
