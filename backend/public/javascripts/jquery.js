@@ -716,6 +716,9 @@ function enableEditable() {
 		var selectedPreview = $("#symbol_picker").find(".selected-symbol-preview");
 		// Get the class of the clicked element.
 		moveDescript = "Color";
+		selection = [parseInt(selectedPreview.attr(
+			"symbol"
+		))]
 		let from, x, y;
 		[from, x, y] = $(this).attr("id").split(/[_-]/);
 		selection = [[parseInt(x),parseInt(y)]];
@@ -856,7 +859,7 @@ function fillSelected() {
 	wasMoveRotFlip = false;
 
     recordGridchange();
-	selection = [[minx,miny],[maxx,maxy]];
+	selection = [[minx,miny],[maxx,maxy], color];
 	console.log(
 		`-- Action: Fill\n---- Where: (${minx},${miny}) ~ (${maxx},${maxy})\n---- Color: ${color}`
 	);
