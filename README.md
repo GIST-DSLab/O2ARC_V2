@@ -2,7 +2,7 @@
 
 ### Getting Started
 
-This project is based on Node.js + SQLlite
+This project is based on Node.js + SQLite
 
 ```bash
 --app.js
@@ -45,3 +45,79 @@ This project is based on Node.js + SQLlite
  #hi
 
 ```
+
+### Data Structure
+
+Before Sep. 2023.
+
+`action_sequence` is a list of `[Tool, Operation, Info, Grid]`. The possible combinations of each element are listed as a table below.
+- `Grid` is 2D Array consist of numbers (0~9). 
+- `succeed` is boolean value which indicates the submit was correct.
+- `direction` is one of "U", "D", "R", and "L".
+- `grid_source` indicates which source grid was copied. One of "Input Grid" and "Output Grid".
+- <b> `x` is row index, and `y` is column index.</b> Be aware that `x` doesn't mean horizontal position.
+
+<table>
+    <tr>
+        <th>Tool
+        <th>Operation
+        <th>Info
+    </tr>
+    <tr>
+        <td rowspan=4> Critical
+        <td> CopyFromInput
+        <td> <code>[]</code>
+    </tr>
+    <tr>
+        <td> ResizeGrid
+        <td rowspan=2> <code>[[H, W]]</code>
+    </tr>
+    <tr>
+        <td> ResetGrid
+    </tr>
+    <tr>
+        <td> Submit
+        <td> <code>[succeed]</code>
+    </tr>
+    <tr>
+        <td > Edit
+        <td> Color
+        <td> <code> [[x, y]] </code>
+    </tr>
+    <tr>
+        <td rowspan=8> Select
+        <td> Fill
+        <td rowspan=5> <code>[[x_min, y_min], [x_max, y_max]]</code>
+    </tr>
+    <tr>
+        <td> FlipX
+    </tr>
+    <tr>
+        <td> FlipY
+    </tr>
+    <tr>
+        <td> RotateCW
+    </tr>
+    <tr>
+        <td> RotateCCW
+    </tr>
+    <tr>
+        <td> Move
+        <td> <code>[[x_min, y_min], [x_max, y_max], direction]</code>
+    </tr>
+    <tr>
+        <td> Copy
+        <td > <code>[[x_min, y_min], [x_max, y_max], grid_source]</code>
+    </tr>
+    <tr>
+        <td> Paste
+        <td > <code>[[x, y]]</code>
+    </tr>
+    <tr>
+        <td> Flood fill
+        <td> FloodFill
+        <td > <code>[[x_min, y_min], [x_max, y_max]]</code>
+    </tr>
+        
+</table>
+
