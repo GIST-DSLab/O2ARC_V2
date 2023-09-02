@@ -82,7 +82,7 @@ Before Sep. 2023.
     <tr>
         <td > Edit
         <td> Color
-        <td> <code> [[x, y]] </code>
+        <td> <code>[[x, y]]</code>
     </tr>
     <tr>
         <td rowspan=8> Select
@@ -116,7 +116,7 @@ Before Sep. 2023.
     <tr>
         <td> Flood fill
         <td> FloodFill
-        <td > <code>[[x_min, y_min], [x_max, y_max]]</code>
+        <td> <code>[[x, y]]</code>
     </tr>
         
 </table>
