@@ -716,16 +716,13 @@ function enableEditable() {
 		var selectedPreview = $("#symbol_picker").find(".selected-symbol-preview");
 		// Get the class of the clicked element.
 		moveDescript = "Color";
-		selection = [parseInt(selectedPreview.attr(
-			"symbol"
-		))]
+		
 		let from, x, y;
 		[from, x, y] = $(this).attr("id").split(/[_-]/);
-		selection = [[parseInt(x),parseInt(y)]];
+		color = parseInt(selectedPreview.attr("symbol"))
+		selection = [[parseInt(x),parseInt(y)], color];
 		console.log(
-			`--Action: Coloring\n---- Where: (${x},${y})\n---- Color: ${selectedPreview.attr(
-				"symbol"
-			)}`
+			`--Action: Coloring\n---- Where: (${x},${y})\n---- Color: ${color}`
 		);
 		var currentClasses = $(this).attr("class").match(/symbol_[0-9]/)[0];
 		$(this)
@@ -810,11 +807,11 @@ function enableFloodFill() {
 		let from, x, y;
 		[from, x, y] = $(this).attr("id").split(/[_-]/);
 		x = parseInt(x); y=parseInt(y);
-		selection = [[x,y]];
+		color = parseInt(selectedPreview.attr("symbol"))
+		selection = [[x,y], color];
+		
 		console.log(
-			`--Action: FloodFill\n---- Where: (${x},${y})\n---- Color: ${selectedPreview.attr(
-				"symbol"
-			)}`
+			`--Action: FloodFill\n---- Where: (${x},${y})\n---- Color: ${color}`
 		);
 		dfsFloodFill(x,y,selectedPreview.attr('symbol'));
         recordGridchange();
