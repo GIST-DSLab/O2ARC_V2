@@ -1073,6 +1073,144 @@ function copyFromInput() {
 	cell_observer();
 }
 
+function cropGrid(){
+	// ctrl하는 순간 -> 해당 키에 대응하는 함수 실행(copy)
+	// copy함수 이후 selection 변수에 좌상단, 우하단, 어디에서 가져왔는지(input, output) 정보가 들어가짐
+	// 아래는 paste 함수의 일부분, 이걸 적절히 고치면 될 것 같음.
+	selected = $(".ui-selected");
+	if (selected.length == 0) {
+		// No Position Specified
+		return;
+	} else {
+		/* selected된 부분 copy 하기 */
+		xlist = [];
+		ylist = [];
+		symbols = [];
+		var xx, yy, cv, from;
+
+		// retrieve cell data from selected
+		for (let i = 0; i < selected.length; i++) {
+			cellid = $(selected[i]).attr("id");
+			cv = parseInt(
+				$(selected[i])
+					.attr("class")
+					.match(/symbol_([0-9])/)[1]
+			); // get cell symbol number
+			ar = cellid.split(/[_-]/);
+			[from, xx, yy] = ar;
+			xx = parseInt(xx);
+			yy = parseInt(yy);
+			cv = parseInt(cv);
+
+			xlist.push(xx);
+			ylist.push(yy);
+			symbols.push(cv);
+		}
+		if (from == "inputcell") {
+			from = "Input Grid";
+		} else {
+			from = "Output Grid";
+		}
+
+		// Calculate array size
+		let minx = Math.min(...xlist);
+		let maxx = Math.max(...xlist);
+		let miny = Math.min(...ylist);
+		let maxy = Math.max(...ylist);
+		let copyheight = maxx - minx + 1;
+		let copywidth = maxy - miny + 1;
+		
+		// ARRAY CONStruction
+		COPIED_ARRAY = [];
+		for (var i = 0; i < copyheight; i++) {
+			COPIED_ARRAY.push([]);
+		}
+
+		// put into the copy array
+		for (var i = 0; i < selected.length; i++) {
+			xx = xlist[i];
+			yy = ylist[i];
+			cv = symbols[i];
+			COPIED_ARRAY[xx - minx][yy - miny] = cv;
+		}
+		console.log(
+			`-- Action: Copy Array\n---- From: <${from}>\n---- Where: (${minx},${miny}) ~ (${maxx},${maxy})\n---- Copied:`,
+			COPIED_ARRAY
+		);
+
+		/* output grid 사이즈 copy한 크기와 유사하게 줄이기 */
+		var rows = maxx - minx + 1;
+		var cols = maxy - miny + 1;
+		if( !rows || !cols || rows>30 || cols > 30) return;
+
+		const numbersArray = createArray(rows, cols);
+		array = createArray(rows, cols);
+
+		if (rows > cols) {
+			n = rows;
+			$("#test_output_grid").css("width", (fullGridSize * cols) / rows);
+		} else {
+			n = cols;
+			$("#test_output_grid").css("width", fullGridSize);
+		}
+		$("#test_output_grid").data("height", rows);
+		$("#test_output_grid").data("width", cols);
+
+		var grid = document.getElementById("test_output_grid");
+		grid.innerHTML = "";
+
+		for (var i = 0; i < rows; i++) {
+			var row = document.createElement("div");
+			row.className = "row justify-content-center";
+			for (var j = 0; j < cols; j++) {
+				var cell = document.createElement("div");
+				cell.className = "cell_final symbol_0";
+				cell.id = "cell_" + i + "-" + j;
+				cell.style.width = (fullGridSize - 1) / n + "px";
+				cell.style.height = (fullGridSize - 1) / n + "px";
+				row.appendChild(cell);
+			}
+			grid.appendChild(row);
+		}
+		// Log the input value to the console
+		console.log(`-- Action: Resize Grid\n---- Size: ${rows} x ${cols}`);
+
+		/* output grid에 paste하기 */
+		selected = $("#test_output_grid").find(".row");
+		ar = selected[0].childNodes[0].attributes.id.value.split(/[-_]/);
+		[from, pasteCellX, pasteCellY] = ar;
+		pasteCellX = parseInt(pasteCellX);
+		pasteCellY = parseInt(pasteCellY);
+
+		height = COPIED_ARRAY.length;
+		width = COPIED_ARRAY[0].length;
+		for (var i = 0; i < height; i++) {
+			for (var j = 0; j < width; j++) {
+				x = pasteCellX + i;
+				y = pasteCellY + j;
+				cv = COPIED_ARRAY[i][j];
+				found = $(`#cell_${x}-${y}`);
+
+				if (found.length == 1) {
+					symbolClass = found.attr("class").match(/symbol_[0-9]/)[0];
+					found.removeClass(symbolClass).addClass("symbol_" + cv);
+				}
+			}
+		}
+		moveDescript = "Paste";
+		wasMoveRotFlip = false;
+		recordGridchange();
+		selection = [[pasteCellX,pasteCellY]]
+		console.log(
+			`-- Action: Paste Array\n---- Where: (${pasteCellX},${pasteCellY}) ~ (${
+				pasteCellX + height - 1
+			},${pasteCellY + width - 1})\n---- Data:`,
+			COPIED_ARRAY
+		);
+		enableSelectable();
+	}
+}
+
 function compareArrays(array1, array2) {
 	// Check if the arrays have the same number of rows
 	if (array1.length !== array2.length) {
