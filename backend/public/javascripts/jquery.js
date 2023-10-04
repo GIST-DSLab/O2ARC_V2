@@ -503,6 +503,44 @@ function handleUndoAction() {
         let planesymbol = saveInRectangle(stackTop.allSymbols, size.width, size.height);
         let planeid = saveInRectangle(stackTop.allCellIds, size.width, size.height);
         moveDescript = 'Undo';
+		current_column_num = $('#test_output_grid').children().length;
+		current_row_num = $('#test_output_grid').children().children().length / current_column_num;
+
+		if (size['height'] != current_column_num || size['width'] != current_row_num) {
+			var rows =  size['width'];
+			var cols = size['height'];
+			if( !rows || !cols || rows>30 || cols > 30) return;
+
+			const numbersArray = createArray(rows, cols);
+			array = createArray(rows, cols);
+
+			if (rows > cols) {
+				n = rows;
+				$("#test_output_grid").css("width", (fullGridSize * cols) / rows);
+			} else {
+				n = cols;
+				$("#test_output_grid").css("width", fullGridSize);
+			}
+			$("#test_output_grid").data("height", rows);
+			$("#test_output_grid").data("width", cols);
+
+			var grid = document.getElementById("test_output_grid");
+			grid.innerHTML = "";
+
+			for (var i = 0; i < rows; i++) {
+				var row = document.createElement("div");
+				row.className = "row justify-content-center";
+				for (var j = 0; j < cols; j++) {
+					var cell = document.createElement("div");
+					cell.className = "cell_final symbol_0";
+					cell.id = "cell_" + i + "-" + j;
+					cell.style.width = (fullGridSize - 1) / n + "px";
+					cell.style.height = (fullGridSize - 1) / n + "px";
+					row.appendChild(cell);
+				}
+				grid.appendChild(row);
+			}
+		} 
 		updateCellClasses(planeid, planesymbol);
         // Enable the Redo button after an undo
         $('#redo_button').prop('disabled', false);
@@ -532,6 +570,46 @@ function handleRedoAction() {
         let planesymbol = saveInRectangle(stackTop.allSymbols, size.width, size.height);
         let planeid = saveInRectangle(stackTop.allCellIds, size.width, size.height);
         moveDescript = 'Redo';
+
+		current_column_num = $('#test_output_grid').children().length;
+		current_row_num = $('#test_output_grid').children().children().length / current_column_num;
+
+		if (size['height'] != current_column_num || size['width'] != current_row_num) {
+			var rows =  size['width'];
+			var cols = size['height'];
+			if( !rows || !cols || rows>30 || cols > 30) return;
+
+			const numbersArray = createArray(rows, cols);
+			array = createArray(rows, cols);
+
+			if (rows > cols) {
+				n = rows;
+				$("#test_output_grid").css("width", (fullGridSize * cols) / rows);
+			} else {
+				n = cols;
+				$("#test_output_grid").css("width", fullGridSize);
+			}
+			$("#test_output_grid").data("height", rows);
+			$("#test_output_grid").data("width", cols);
+
+			var grid = document.getElementById("test_output_grid");
+			grid.innerHTML = "";
+
+			for (var i = 0; i < rows; i++) {
+				var row = document.createElement("div");
+				row.className = "row justify-content-center";
+				for (var j = 0; j < cols; j++) {
+					var cell = document.createElement("div");
+					cell.className = "cell_final symbol_0";
+					cell.id = "cell_" + i + "-" + j;
+					cell.style.width = (fullGridSize - 1) / n + "px";
+					cell.style.height = (fullGridSize - 1) / n + "px";
+					row.appendChild(cell);
+				}
+				grid.appendChild(row);
+			}
+		} 
+
 		updateCellClasses(planeid, planesymbol);
         // Enable the Undo button after a redo
 	    $('#undo_button').prop('disabled', false);
@@ -1088,6 +1166,8 @@ function cropGrid(){
 		symbols = [];
 		var xx, yy, cv, from;
 
+		// historyStack.push(copyGrid())
+
 		// retrieve cell data from selected
 		for (let i = 0; i < selected.length; i++) {
 			cellid = $(selected[i]).attr("id");
@@ -1172,6 +1252,7 @@ function cropGrid(){
 			}
 			grid.appendChild(row);
 		}
+		
 		// Log the input value to the console
 		console.log(`-- Action: Resize Grid\n---- Size: ${rows} x ${cols}`);
 
