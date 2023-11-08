@@ -322,6 +322,7 @@ $(function () {
 						x = pasteCellX + i;
 						y = pasteCellY + j;
 						cv = COPIED_ARRAY[i][j];
+						if(cv==0) continue;
 						found = $(`#cell_${x}-${y}`);
 
 						if (found.length == 1) {
