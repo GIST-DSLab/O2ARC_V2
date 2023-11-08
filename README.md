@@ -74,17 +74,25 @@ Current Data Structure.
         <td> <code>[succeed]</code>
     </tr>
     <tr>
-        <td > Edit
+        <td rowspan=3> Edit
         <td> Color
         <td> <code>[[x, y], color]</code>
+    </tr>
+        <td> Undo
+        <td> <code>[]</code>
+    </tr>
+    <tr>
+        <td> Redo
+        <td> <code>[]</code>
     </tr>
     <tr>
         <td rowspan=8> Select
         <td> Fill
-        <td rowspan=5> <code>[[x_min, y_min], [x_max, y_max], color]</code>
+        <td> <code>[[x_min, y_min], [x_max, y_max], color]</code>
     </tr>
     <tr>
         <td> FlipX
+        <td rowspan=4> <code>[[x_min, y_min], [x_max, y_max]]</code>
     </tr>
     <tr>
         <td> FlipY
