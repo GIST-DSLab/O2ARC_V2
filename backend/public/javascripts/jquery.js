@@ -13,7 +13,7 @@ var historyStack = []
 var undoHistory = []
 
 const Actions = ['Color', 'Fill', 'FlipX', 'FlipY', 'RotateCW', 'RotateCCW', 'Copy', 'Paste', 'Move', 'FloodFill', 'Undo', 'Redo'];
-const CriticalActions = ['CopyFromInput', 'ResetGrid', 'ResizeGrid', 'Submit'];
+const CriticalActions = ['CopyFromInput', 'ResetGrid', 'ResizeGrid','CropGrid','Submit'];
 var moveDescript = ''
 
 var TOTAL_SUBPROBLEMS;
@@ -506,7 +506,53 @@ function handleUndoAction() {
         let planesymbol = saveInRectangle(stackTop.allSymbols, size.width, size.height);
         let planeid = saveInRectangle(stackTop.allCellIds, size.width, size.height);
         moveDescript = 'Undo';
-		updateCellClasses(planeid, planesymbol);
+		current_column_num = $('#test_output_grid').children().length;
+		current_row_num = $('#test_output_grid').children().children().length / current_column_num;
+
+		if (size['height'] != current_column_num || size['width'] != current_row_num) {
+			var rows =  size['width'];
+			var cols = size['height'];
+			if( !rows || !cols || rows>30 || cols > 30) return;
+
+			const numbersArray = createArray(rows, cols);
+			array = createArray(rows, cols);
+
+			if (rows > cols) {
+				n = rows;
+				$("#test_output_grid").css("width", (fullGridSize * cols) / rows);
+			} else {
+				n = cols;
+				$("#test_output_grid").css("width", fullGridSize);
+			}
+			$("#test_output_grid").data("height", rows);
+			$("#test_output_grid").data("width", cols);
+
+			var grid = document.getElementById("test_output_grid");
+			grid.innerHTML = "";
+
+			for (var i = 0; i < rows; i++) {
+				var row = document.createElement("div");
+				row.className = "row justify-content-center";
+				for (var j = 0; j < cols; j++) {
+					var cell = document.createElement("div");
+					cell.className = "cell_final symbol_0";
+					cell.id = "cell_" + i + "-" + j;
+					cell.style.width = (fullGridSize - 1) / n + "px";
+					cell.style.height = (fullGridSize - 1) / n + "px";
+					row.appendChild(cell);
+				}
+				grid.appendChild(row);
+			}
+			// change & undostack store occurs only when doing cropgrid action
+			// unique, so do this 
+			enableSelectable()	
+			updateCellClasses(planeid, planesymbol);
+			final = pushToTargetArray(getCurrentArray(),'Critical','Undo',[],final);
+			// Enable the Undo button after a redo
+		} 
+		else {
+			updateCellClasses(planeid, planesymbol);
+		}
         // Enable the Redo button after an undo
         $('#redo_button').prop('disabled', false);
 	}
@@ -535,8 +581,55 @@ function handleRedoAction() {
         let planesymbol = saveInRectangle(stackTop.allSymbols, size.width, size.height);
         let planeid = saveInRectangle(stackTop.allCellIds, size.width, size.height);
         moveDescript = 'Redo';
-		updateCellClasses(planeid, planesymbol);
-        // Enable the Undo button after a redo
+
+		current_column_num = $('#test_output_grid').children().length;
+		current_row_num = $('#test_output_grid').children().children().length / current_column_num;
+
+		if (size['height'] != current_column_num || size['width'] != current_row_num) {
+			var rows =  size['width'];
+			var cols = size['height'];
+			if( !rows || !cols || rows>30 || cols > 30) return;
+
+			const numbersArray = createArray(rows, cols);
+			array = createArray(rows, cols);
+
+			if (rows > cols) {
+				n = rows;
+				$("#test_output_grid").css("width", (fullGridSize * cols) / rows);
+			} else {
+				n = cols;
+				$("#test_output_grid").css("width", fullGridSize);
+			}
+			$("#test_output_grid").data("height", rows);
+			$("#test_output_grid").data("width", cols);
+
+			var grid = document.getElementById("test_output_grid");
+			grid.innerHTML = "";
+
+			for (var i = 0; i < rows; i++) {
+				var row = document.createElement("div");
+				row.className = "row justify-content-center";
+				for (var j = 0; j < cols; j++) {
+					var cell = document.createElement("div");
+					cell.className = "cell_final symbol_0";
+					cell.id = "cell_" + i + "-" + j;
+					cell.style.width = (fullGridSize - 1) / n + "px";
+					cell.style.height = (fullGridSize - 1) / n + "px";
+					row.appendChild(cell);
+				}
+				grid.appendChild(row);
+			}
+			enableSelectable()	
+			updateCellClasses(planeid, planesymbol);
+			final = pushToTargetArray(getCurrentArray(),'Critical','Redo',[],final);
+			// Enable the Undo button after a redo
+		} 
+		else {
+			updateCellClasses(planeid, planesymbol);
+		}
+
+		
+		
 	    $('#undo_button').prop('disabled', false);
 	}
 	// Disable the Redo button if there is no more undo history
@@ -1074,6 +1167,149 @@ function copyFromInput() {
 	selection = [];
 	resetHistoryStack();
 	cell_observer();
+}
+
+function cropGrid(){
+	// ctrl하는 순간 -> 해당 키에 대응하는 함수 실행(copy)
+	// copy함수 이후 selection 변수에 좌상단, 우하단, 어디에서 가져왔는지(input, output) 정보가 들어가짐
+	// 아래는 paste 함수의 일부분, 이걸 적절히 고치면 될 것 같음.
+	selected = $(".ui-selected");
+	if (selected.length == 0) {
+		// No Position Specified
+		return;
+	} else {
+		/* selected된 부분 copy 하기 */
+		xlist = [];
+		ylist = [];
+		symbols = [];
+		var xx, yy, cv, from;
+
+		// historyStack.push(copyGrid())
+
+		// retrieve cell data from selected
+		for (let i = 0; i < selected.length; i++) {
+			cellid = $(selected[i]).attr("id");
+			cv = parseInt(
+				$(selected[i])
+					.attr("class")
+					.match(/symbol_([0-9])/)[1]
+			); // get cell symbol number
+			ar = cellid.split(/[_-]/);
+			[from, xx, yy] = ar;
+			xx = parseInt(xx);
+			yy = parseInt(yy);
+			cv = parseInt(cv);
+
+			xlist.push(xx);
+			ylist.push(yy);
+			symbols.push(cv);
+		}
+
+		// Calculate array size
+		let minx = Math.min(...xlist);
+		let maxx = Math.max(...xlist);
+		let miny = Math.min(...ylist);
+		let maxy = Math.max(...ylist);
+		let copyheight = maxx - minx + 1;
+		let copywidth = maxy - miny + 1;
+		selection = [[minx, miny],[maxx,maxy]];
+		// ARRAY CONStruction
+		let CROP_ARRAY = [];
+		for (var i = 0; i < copyheight; i++) {
+			CROP_ARRAY.push([]);
+		}
+
+		// put into the copy array
+		for (var i = 0; i < selected.length; i++) {
+			xx = xlist[i];
+			yy = ylist[i];
+			cv = symbols[i];
+			CROP_ARRAY[xx - minx][yy - miny] = cv;
+		}
+
+		/* output grid 사이즈 copy한 크기와 유사하게 줄이기 */
+		var rows = maxx - minx + 1;
+		var cols = maxy - miny + 1;
+		if( !rows || !cols || rows>30 || cols > 30) return;
+
+		array = createArray(rows, cols);
+
+		if (rows > cols) {
+			n = rows;
+			$("#test_output_grid").css("width", (fullGridSize * cols) / rows);
+		} else {
+			n = cols;
+			$("#test_output_grid").css("width", fullGridSize);
+		}
+		$("#test_output_grid").data("height", rows);
+		$("#test_output_grid").data("width", cols);
+
+		var grid = document.getElementById("test_output_grid");
+		grid.innerHTML = "";
+
+		for (var i = 0; i < rows; i++) {
+			var row = document.createElement("div");
+			row.className = "row justify-content-center";
+			for (var j = 0; j < cols; j++) {
+				var cell = document.createElement("div");
+				cell.className = "cell_final symbol_0";
+				cell.id = "cell_" + i + "-" + j;
+				cell.style.width = (fullGridSize - 1) / n + "px";
+				cell.style.height = (fullGridSize - 1) / n + "px";
+				row.appendChild(cell);
+			}
+			grid.appendChild(row);
+		}
+		
+		// Log the input value to the console
+		console.log(`: ${rows} x ${cols}`);
+
+		/* output grid에 paste하기 */
+		selected = $("#test_output_grid").find(".row");
+		ar = selected[0].childNodes[0].attributes.id.value.split(/[-_]/);
+		[from, pasteCellX, pasteCellY] = ar;
+		pasteCellX = parseInt(pasteCellX);
+		pasteCellY = parseInt(pasteCellY);
+
+		height = CROP_ARRAY.length;
+		width = CROP_ARRAY[0].length;
+		for (var i = 0; i < height; i++) {
+			for (var j = 0; j < width; j++) {
+				x = pasteCellX + i;
+				y = pasteCellY + j;
+				cv = CROP_ARRAY[i][j];
+				found = $(`#cell_${x}-${y}`);
+
+				if (found.length == 1) {
+					symbolClass = found.attr("class").match(/symbol_[0-9]/)[0];
+					found.removeClass(symbolClass).addClass("symbol_" + cv);
+				}
+			}
+		}
+		numbersArray = getCurrentArray();
+		wasMoveRotFlip = false;
+		labelText = "Critical";
+		moveDescript = "CropGrid";
+		recordGridchange();
+		
+		console.log(
+			`-- Action: CropGrid\n---- Where: (${minx},${miny}) ~ (${maxx},${maxy})\n---- Data:`,
+			CROP_ARRAY
+		);
+		
+		
+		final = pushToTargetArray(
+			numbersArray,
+			labelText,
+			moveDescript,
+			selection,
+			final
+		);
+		selection = []
+		moveDescript = "";
+		enableSelectable();
+		cell_observer();
+	}
 }
 
 function compareArrays(array1, array2) {
