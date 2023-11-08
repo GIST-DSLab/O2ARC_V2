@@ -38,6 +38,8 @@ $(function () {
 			// Backup Here
 			separateSelection();
 			
+		} else{
+			selection = [[],[]]
 		}
 		// select cell stored
 	}
@@ -356,7 +358,7 @@ $(function () {
 			var coordinates = convertCellIdsToCoordinates(selectedIds); // Convert Cell ids' to Coords
 			var size = calculateRectangleSize(coordinates);
 			selection = [[size.minX,size.minY],[size.maxX,size.maxY]];
-
+			
 			if (event.key === "w" || event.key === "ArrowUp") {
 
 				handleSelectStart();
