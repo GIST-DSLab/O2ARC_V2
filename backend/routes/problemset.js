@@ -19,10 +19,8 @@ router.get('/:id', async function(req, res, next) {
     console.log(userName)
 
     try{
-        // data = await userhelper.getARCList(userName,mini=true);
-        // data2 = await userhelper.getARCList(userName);
-        data = await userhelper.getARCList_test(userName,mini=true);
-        data2 = await userhelper.getARCList_test(userName);
+        data = await userhelper.getARCList(userName,mini=true);
+        data2 = await userhelper.getARCList(userName);
         sucData = await userhelper.getSuccessList(userName);
         sucDataDict = {}; 
         
@@ -51,16 +49,16 @@ router.get('/:id/:problem', async function(req, res, next) {
     
     // var minirand = logic_function.getRandomInt(5948,6096)
     var minirand = logic_function.getRandomInt(5948,6096)
-    const random_stage_mini = [5952,5971,5978,5983,6015,6018,6021,6022,6026,6033,6048,6055]
-    if (random_stage_mini.indexOf(minirand)!=-1) {
-      minirand+=2
-    }
+    //const random_stage_mini = [5952,5971,5978,5983,6015,6018,6021,6022,6026,6033,6048,6055]
+    //if (random_stage_mini.indexOf(minirand)!=-1) {
+    //  minirand+=2
+    //}
     // var rand = logic_function.getRandomInt(6098,6496)
     var rand = logic_function.getRandomInt(6098,6496)
-    const random_stage_arc = [6186, 6227, 6241, 6247, 6268, 6271, 6291, 6299, 6303, 6309, 6410, 6490]
-    if (random_stage_arc.indexOf(rand)!=-1) {
-      rand+=2
-    }
+    //const random_stage_arc = [6186, 6227, 6241, 6247, 6268, 6271, 6291, 6299, 6303, 6309, 6410, 6490]
+    //if (random_stage_arc.indexOf(rand)!=-1) {
+    //  rand+=2
+    //}
     const qs = req.query.subp
     let subprobidx;
     if(!qs){
@@ -68,7 +66,7 @@ router.get('/:id/:problem', async function(req, res, next) {
     } else {
       subprobidx = parseInt(qs)
     }
-    db.get("SELECT content FROM HappyARC WHERE id = ?", [params], async (err, row) => {
+    db.get("SELECT content FROM tasklist WHERE id = ?", [params], async (err, row) => {
 
     // db.get("SELECT content FROM tasklist WHERE id = ?", [params], (err, row) => {
         if (err) {
@@ -101,10 +99,8 @@ router.get('/:id/:problem', async function(req, res, next) {
           // console.log(traingrid)
           var data, data2;
           try{
-            // data = await userhelper.getARCList(userName,mini=true);
-            // data2 = await userhelper.getARCList(userName);
-            data = await userhelper.getARCList_test(userName,mini=true);
-            data2 = await userhelper.getARCList_test(userName);
+            data = await userhelper.getARCList(userName,mini=true);
+            data2 = await userhelper.getARCList(userName);
             
           } catch (err) {
               console.log(err)
