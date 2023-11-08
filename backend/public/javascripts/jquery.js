@@ -13,7 +13,7 @@ var historyStack = []
 var undoHistory = []
 
 const Actions = ['Color', 'Fill', 'FlipX', 'FlipY', 'RotateCW', 'RotateCCW', 'Copy', 'Paste', 'Move', 'FloodFill', 'Undo', 'Redo'];
-const CriticalActions = ['CopyFromInput', 'ResetGrid', 'ResizeGrid', 'Submit'];
+const CriticalActions = ['CopyFromInput', 'ResetGrid', 'ResizeGrid','CropGrid','Submit'];
 var moveDescript = ''
 
 var TOTAL_SUBPROBLEMS;
@@ -540,8 +540,16 @@ function handleUndoAction() {
 				}
 				grid.appendChild(row);
 			}
+			// change & undostack store occurs only when doing cropgrid action
+			// unique, so do this 
+			enableSelectable()	
+			updateCellClasses(planeid, planesymbol);
+			final = pushToTargetArray(getCurrentArray(),'Critical','Undo',[],final);
+			// Enable the Undo button after a redo
 		} 
-		updateCellClasses(planeid, planesymbol);
+		else {
+			updateCellClasses(planeid, planesymbol);
+		}
         // Enable the Redo button after an undo
         $('#redo_button').prop('disabled', false);
 	}
@@ -608,10 +616,17 @@ function handleRedoAction() {
 				}
 				grid.appendChild(row);
 			}
+			enableSelectable()	
+			updateCellClasses(planeid, planesymbol);
+			final = pushToTargetArray(getCurrentArray(),'Critical','Redo',[],final);
+			// Enable the Undo button after a redo
 		} 
+		else {
+			updateCellClasses(planeid, planesymbol);
+		}
 
-		updateCellClasses(planeid, planesymbol);
-        // Enable the Undo button after a redo
+		
+		
 	    $('#undo_button').prop('disabled', false);
 	}
 	// Disable the Redo button if there is no more undo history
@@ -1186,11 +1201,6 @@ function cropGrid(){
 			ylist.push(yy);
 			symbols.push(cv);
 		}
-		if (from == "inputcell") {
-			from = "Input Grid";
-		} else {
-			from = "Output Grid";
-		}
 
 		// Calculate array size
 		let minx = Math.min(...xlist);
@@ -1199,11 +1209,11 @@ function cropGrid(){
 		let maxy = Math.max(...ylist);
 		let copyheight = maxx - minx + 1;
 		let copywidth = maxy - miny + 1;
-		
+		selection = [[minx, miny],[maxx,maxy]];
 		// ARRAY CONStruction
-		COPIED_ARRAY = [];
+		let CROP_ARRAY = [];
 		for (var i = 0; i < copyheight; i++) {
-			COPIED_ARRAY.push([]);
+			CROP_ARRAY.push([]);
 		}
 
 		// put into the copy array
@@ -1211,19 +1221,14 @@ function cropGrid(){
 			xx = xlist[i];
 			yy = ylist[i];
 			cv = symbols[i];
-			COPIED_ARRAY[xx - minx][yy - miny] = cv;
+			CROP_ARRAY[xx - minx][yy - miny] = cv;
 		}
-		console.log(
-			`-- Action: Copy Array\n---- From: <${from}>\n---- Where: (${minx},${miny}) ~ (${maxx},${maxy})\n---- Copied:`,
-			COPIED_ARRAY
-		);
 
 		/* output grid 사이즈 copy한 크기와 유사하게 줄이기 */
 		var rows = maxx - minx + 1;
 		var cols = maxy - miny + 1;
 		if( !rows || !cols || rows>30 || cols > 30) return;
 
-		const numbersArray = createArray(rows, cols);
 		array = createArray(rows, cols);
 
 		if (rows > cols) {
@@ -1254,7 +1259,7 @@ function cropGrid(){
 		}
 		
 		// Log the input value to the console
-		console.log(`-- Action: Resize Grid\n---- Size: ${rows} x ${cols}`);
+		console.log(`: ${rows} x ${cols}`);
 
 		/* output grid에 paste하기 */
 		selected = $("#test_output_grid").find(".row");
@@ -1263,13 +1268,13 @@ function cropGrid(){
 		pasteCellX = parseInt(pasteCellX);
 		pasteCellY = parseInt(pasteCellY);
 
-		height = COPIED_ARRAY.length;
-		width = COPIED_ARRAY[0].length;
+		height = CROP_ARRAY.length;
+		width = CROP_ARRAY[0].length;
 		for (var i = 0; i < height; i++) {
 			for (var j = 0; j < width; j++) {
 				x = pasteCellX + i;
 				y = pasteCellY + j;
-				cv = COPIED_ARRAY[i][j];
+				cv = CROP_ARRAY[i][j];
 				found = $(`#cell_${x}-${y}`);
 
 				if (found.length == 1) {
@@ -1278,17 +1283,29 @@ function cropGrid(){
 				}
 			}
 		}
-		moveDescript = "Paste";
+		numbersArray = getCurrentArray();
 		wasMoveRotFlip = false;
+		labelText = "Critical";
+		moveDescript = "CropGrid";
 		recordGridchange();
-		selection = [[pasteCellX,pasteCellY]]
+		
 		console.log(
-			`-- Action: Paste Array\n---- Where: (${pasteCellX},${pasteCellY}) ~ (${
-				pasteCellX + height - 1
-			},${pasteCellY + width - 1})\n---- Data:`,
-			COPIED_ARRAY
+			`-- Action: CropGrid\n---- Where: (${minx},${miny}) ~ (${maxx},${maxy})\n---- Data:`,
+			CROP_ARRAY
 		);
+		
+		
+		final = pushToTargetArray(
+			numbersArray,
+			labelText,
+			moveDescript,
+			selection,
+			final
+		);
+		selection = []
+		moveDescript = "";
 		enableSelectable();
+		cell_observer();
 	}
 }
 
