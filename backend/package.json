@@ -9,6 +9,7 @@
   "dependencies": {
     "axios": "^1.5.1",
     "bootstrap": "^5.2.3",
+    "bootstrap-icons": "^1.11.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "^3.1.8",

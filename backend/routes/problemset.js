@@ -66,7 +66,7 @@ router.get('/:id/:problem', async function(req, res, next) {
     } else {
       subprobidx = parseInt(qs)
     }
-    db.get("SELECT content FROM tasklist WHERE id = ?", [params], async (err, row) => {
+    db.get("SELECT * FROM tasklist WHERE id = ?", [params], async (err, row) => {
 
     // db.get("SELECT content FROM tasklist WHERE id = ?", [params], (err, row) => {
         if (err) {
@@ -78,14 +78,13 @@ router.get('/:id/:problem', async function(req, res, next) {
           const content = JSON.parse(row.content);
           trainData = content.train
           testData = content.test
-
-          //console.log(trainData)
-
+          probhash = row.task_name
+          console.log(probhash)
           traingrid = testing_function.loadJSONTask(trainData)
           testgrid = testing_function.loadJSONTask(testData)
           outputgrid = testing_function.loadJSONTask(testData)
           // console.log(traingrid[0][0])
-          console.log(testgrid[0][0])
+
           h = traingrid[0][0].height
           w = traingrid[0][0].width
           //console.log(h, w)
@@ -113,6 +112,8 @@ router.get('/:id/:problem', async function(req, res, next) {
             grid : traingrid,
             Testgrid: testgrid[subprobidx],
             Outputgrid: outputgrid[subprobidx],
+            probidx: problem,
+            probhash: probhash,
             subprobidx: subprobidx,
             subprobcnt: testgrid.length,
             p:cellsize,
@@ -121,7 +122,7 @@ router.get('/:id/:problem', async function(req, res, next) {
             miniARC_idlist: data,
             ARC_idlist: data2,
             ran1: minirand,
-            ran2: rand
+            ran2: rand, 
         })
         } else {
           return res.status(404).send('Content not found');
