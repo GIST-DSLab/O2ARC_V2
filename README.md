@@ -51,6 +51,7 @@ This project is based on Node.js + SQLite
 
 Current Data Structure.
 
+If there not exist newly selected pixels, `[],[]` will be inserted as a bounding box instead of `[x_min, y_min], [x_max, y_max]`.
 <table>
     <tr>
         <th>Tool
